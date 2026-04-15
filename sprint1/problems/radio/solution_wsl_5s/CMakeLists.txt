@@ -21,7 +21,6 @@ add_executable(radio
 )
 
 target_include_directories(radio PRIVATE
-    src
     ${Boost_INCLUDE_DIRS}
 )
 

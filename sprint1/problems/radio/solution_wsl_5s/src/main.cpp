@@ -1,32 +1,23 @@
-#include "audio.h"
-
 #include <boost/asio.hpp>
 
 #include <arpa/inet.h>
 #include <chrono>
 #include <cstdint>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <unordered_map>
 #include <vector>
 #include <algorithm>
-#include <stdexcept>
 
 using boost::asio::ip::udp;
 using namespace std::literals;
 
-namespace {
-
 constexpr uint32_t MAGIC = 0x52414431;          // "RAD1"
 constexpr uint16_t CHUNK_DATA_SIZE = 1400;
-constexpr ma_format AUDIO_FORMAT = ma_format_u8;
-constexpr int CHANNELS = 1;
-constexpr ma_uint32 SAMPLE_RATE = 44100;
-constexpr auto AUDIO_DURATION = 1500ms;
-constexpr size_t MAX_FRAMES = static_cast<size_t>(SAMPLE_RATE) * 2; // запас
-constexpr auto MESSAGE_TTL = std::chrono::seconds(30);
+constexpr std::chrono::seconds MESSAGE_TTL(30);
 
 #pragma pack(push, 1)
 struct PacketHeader {
@@ -39,7 +30,7 @@ struct PacketHeader {
 };
 #pragma pack(pop)
 
-PacketHeader ToNetwork(PacketHeader h) {
+static PacketHeader ToNetwork(PacketHeader h) {
     h.magic = htonl(h.magic);
     h.message_id = htonl(h.message_id);
     h.total_size = htonl(h.total_size);
@@ -49,7 +40,7 @@ PacketHeader ToNetwork(PacketHeader h) {
     return h;
 }
 
-PacketHeader FromNetwork(PacketHeader h) {
+static PacketHeader FromNetwork(PacketHeader h) {
     h.magic = ntohl(h.magic);
     h.message_id = ntohl(h.message_id);
     h.total_size = ntohl(h.total_size);
@@ -59,21 +50,48 @@ PacketHeader FromNetwork(PacketHeader h) {
     return h;
 }
 
-std::vector<char> RecordAudio(Recorder& recorder) {
-    std::cout << "Press Enter to record message..." << std::endl;
-    std::string dummy;
-    std::getline(std::cin, dummy);
+static std::vector<char> RecordAudio() {
+    std::cout << "Recording 5 seconds..." << std::endl;
 
-    std::cout << "Recording 1.5 seconds..." << std::endl;
-    auto rec = recorder.Record(MAX_FRAMES, AUDIO_DURATION);
+    int rc = std::system(
+        "timeout 5s parecord --device=RDPSource --raw --format=u8 --channels=1 --rate=44100 /tmp/rec.raw"
+    );
 
-    if (rec.data.empty() || rec.frames == 0) {
-        std::cerr << "Recording failed or produced no data" << std::endl;
+    if (rc != 0) {
+        std::cerr << "parecord failed, exit code=" << rc << std::endl;
         return {};
     }
 
-    std::cout << "Recording done. Bytes: " << rec.data.size() << std::endl;
-    return rec.data;
+    std::ifstream file("/tmp/rec.raw", std::ios::binary);
+    if (!file) {
+        std::cerr << "Cannot open /tmp/rec.raw" << std::endl;
+        return {};
+    }
+
+    std::vector<char> data((std::istreambuf_iterator<char>(file)),
+                           std::istreambuf_iterator<char>());
+
+    std::cout << "Recording done. Bytes: " << data.size() << std::endl;
+    return data;
+}
+
+static void PlayAudio(const std::vector<char>& data) {
+    std::ofstream file("/tmp/audio.raw", std::ios::binary);
+    if (!file) {
+        std::cerr << "Cannot open /tmp/audio.raw for writing" << std::endl;
+        return;
+    }
+
+    file.write(data.data(), static_cast<std::streamsize>(data.size()));
+    file.close();
+
+    std::cout << "Playing..." << std::endl;
+    int rc = std::system("paplay --raw --format=u8 --channels=1 --rate=44100 /tmp/audio.raw");
+    if (rc != 0) {
+        std::cerr << "paplay failed, exit code=" << rc << std::endl;
+    } else {
+        std::cout << "Done" << std::endl;
+    }
 }
 
 struct IncomingMessage {
@@ -86,13 +104,11 @@ struct IncomingMessage {
     std::chrono::steady_clock::time_point last_update = std::chrono::steady_clock::now();
 };
 
-std::string MakeMessageKey(const udp::endpoint& sender, uint32_t message_id) {
-    return sender.address().to_string() + ":" +
-           std::to_string(sender.port()) + ":" +
-           std::to_string(message_id);
+static std::string MakeMessageKey(const udp::endpoint& sender, uint32_t message_id) {
+    return sender.address().to_string() + ":" + std::to_string(sender.port()) + ":" + std::to_string(message_id);
 }
 
-void CleanupExpired(std::unordered_map<std::string, IncomingMessage>& messages) {
+static void CleanupExpired(std::unordered_map<std::string, IncomingMessage>& messages) {
     auto now = std::chrono::steady_clock::now();
 
     for (auto it = messages.begin(); it != messages.end();) {
@@ -105,69 +121,76 @@ void CleanupExpired(std::unordered_map<std::string, IncomingMessage>& messages) 
     }
 }
 
-bool ValidateHeader(const PacketHeader& header, size_t bytes_received) {
+static bool ValidateHeader(const PacketHeader& header, size_t len) {
     if (header.magic != MAGIC) {
-        std::cerr << "Drop: invalid magic" << std::endl;
+        std::cout << "Drop: bad magic=0x" << std::hex << header.magic << std::dec << std::endl;
         return false;
     }
 
     if (header.chunk_count == 0) {
-        std::cerr << "Drop: chunk_count=0" << std::endl;
+        std::cout << "Drop: chunk_count=0" << std::endl;
         return false;
     }
 
     if (header.chunk_index >= header.chunk_count) {
-        std::cerr << "Drop: invalid chunk index" << std::endl;
+        std::cout << "Drop: chunk_index=" << header.chunk_index
+                  << " >= chunk_count=" << header.chunk_count << std::endl;
         return false;
     }
 
     if (header.payload_size > CHUNK_DATA_SIZE) {
-        std::cerr << "Drop: payload too big" << std::endl;
+        std::cout << "Drop: payload_size too big: " << header.payload_size << std::endl;
         return false;
     }
 
-    if (bytes_received != sizeof(PacketHeader) + header.payload_size) {
-        std::cerr << "Drop: packet size mismatch" << std::endl;
+    if (len < sizeof(PacketHeader) + header.payload_size) {
+        std::cout << "Drop: short packet. len=" << len
+                  << " expected_at_least=" << (sizeof(PacketHeader) + header.payload_size) << std::endl;
         return false;
     }
 
     size_t offset = static_cast<size_t>(header.chunk_index) * CHUNK_DATA_SIZE;
     if (offset + header.payload_size > header.total_size) {
-        std::cerr << "Drop: chunk exceeds total_size" << std::endl;
+        std::cout << "Drop: payload goes past total_size. offset=" << offset
+                  << " payload=" << header.payload_size
+                  << " total=" << header.total_size << std::endl;
         return false;
     }
 
     return true;
 }
 
-void StartServer(uint16_t port) {
-    boost::asio::io_context io_context;
-    udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
-    Player player(AUDIO_FORMAT, CHANNELS, SAMPLE_RATE);
+static void StartServer(int port) {
+    boost::asio::io_context io;
+    udp::endpoint endpoint(boost::asio::ip::address_v4::any(), static_cast<unsigned short>(port));
+    udp::socket socket(io);
 
-    std::vector<char> recv_buffer(65536);
+    socket.open(udp::v4());
+    socket.bind(endpoint);
+
+    std::cout << "Server started on port " << port << std::endl;
+
+    std::vector<char> buffer(65536);
+    udp::endpoint sender;
+
     std::unordered_map<std::string, IncomingMessage> messages;
 
-    std::cout << "Server started on UDP port " << port << std::endl;
-
     while (true) {
-        udp::endpoint remote_endpoint;
-        size_t bytes_received =
-            socket.receive_from(boost::asio::buffer(recv_buffer), remote_endpoint);
+        size_t len = socket.receive_from(boost::asio::buffer(buffer), sender);
 
-        std::cout << "RAW packet: " << bytes_received
-                  << " bytes from " << remote_endpoint.address().to_string()
-                  << ":" << remote_endpoint.port() << std::endl;
+        std::cout << "RAW packet: " << len
+                  << " bytes from " << sender.address().to_string()
+                  << ":" << sender.port() << std::endl;
 
-        if (bytes_received < sizeof(PacketHeader)) {
-            std::cerr << "Drop: packet too small" << std::endl;
+        if (len < sizeof(PacketHeader)) {
+            std::cout << "Drop: packet smaller than header (" << len << " bytes)" << std::endl;
             CleanupExpired(messages);
             continue;
         }
 
-        PacketHeader net_header{};
-        std::memcpy(&net_header, recv_buffer.data(), sizeof(PacketHeader));
-        PacketHeader header = FromNetwork(net_header);
+        PacketHeader header{};
+        std::memcpy(&header, buffer.data(), sizeof(header));
+        header = FromNetwork(header);
 
         std::cout << "Header: magic=0x" << std::hex << header.magic << std::dec
                   << " msg_id=" << header.message_id
@@ -177,12 +200,12 @@ void StartServer(uint16_t port) {
                   << " payload_size=" << header.payload_size
                   << std::endl;
 
-        if (!ValidateHeader(header, bytes_received)) {
+        if (!ValidateHeader(header, len)) {
             CleanupExpired(messages);
             continue;
         }
 
-        std::string key = MakeMessageKey(remote_endpoint, header.message_id);
+        std::string key = MakeMessageKey(sender, header.message_id);
         auto it = messages.find(key);
 
         if (it == messages.end()) {
@@ -203,7 +226,7 @@ void StartServer(uint16_t port) {
         } else {
             if (it->second.total_size != header.total_size ||
                 it->second.chunk_count != header.chunk_count) {
-                std::cerr << "Drop: inconsistent header for existing message" << std::endl;
+                std::cout << "Drop: inconsistent header for existing message key=" << key << std::endl;
                 CleanupExpired(messages);
                 continue;
             }
@@ -216,16 +239,16 @@ void StartServer(uint16_t port) {
 
         if (!msg.received[header.chunk_index]) {
             std::memcpy(msg.data.data() + offset,
-                        recv_buffer.data() + sizeof(PacketHeader),
+                        buffer.data() + sizeof(PacketHeader),
                         header.payload_size);
 
             msg.received[header.chunk_index] = true;
-            ++msg.received_chunks;
+            msg.received_chunks++;
 
             std::cout << "Accepted chunk "
                       << (header.chunk_index + 1) << "/" << msg.chunk_count
                       << " for msg_id=" << msg.message_id
-                      << " received=" << msg.received_chunks
+                      << " received_chunks=" << msg.received_chunks
                       << "/" << msg.chunk_count << std::endl;
         } else {
             std::cout << "Duplicate chunk "
@@ -234,16 +257,9 @@ void StartServer(uint16_t port) {
         }
 
         if (msg.received_chunks == msg.chunk_count) {
-            size_t frame_size = static_cast<size_t>(player.GetFrameSize());
-            size_t frames = frame_size == 0 ? 0 : (msg.data.size() / frame_size);
-
             std::cout << "Message complete: msg_id=" << msg.message_id
-                      << " bytes=" << msg.total_size
-                      << " frames=" << frames << std::endl;
-
-            player.PlayBuffer(msg.data.data(), frames, AUDIO_DURATION);
-            std::cout << "Playing done" << std::endl;
-
+                      << " bytes=" << msg.total_size << std::endl;
+            PlayAudio(msg.data);
             messages.erase(it);
         }
 
@@ -251,20 +267,16 @@ void StartServer(uint16_t port) {
     }
 }
 
-uint32_t GenerateMessageId() {
+static uint32_t GenerateMessageId() {
     auto now = std::chrono::steady_clock::now().time_since_epoch();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
     return static_cast<uint32_t>(ms & 0xFFFFFFFFu);
 }
 
-void StartClient(uint16_t port) {
-    boost::asio::io_context io_context;
-    udp::socket socket(io_context);
+static void StartClient(int port) {
+    boost::asio::io_context io;
+    udp::socket socket(io);
     socket.open(udp::v4());
-
-    Recorder recorder(AUDIO_FORMAT, CHANNELS, SAMPLE_RATE);
-
-    std::cout << "Client started. Destination port: " << port << std::endl;
 
     while (true) {
         std::string ip;
@@ -272,90 +284,79 @@ void StartClient(uint16_t port) {
         std::getline(std::cin, ip);
 
         if (ip.empty()) {
-            break;
-        }
-
-        udp::endpoint endpoint(boost::asio::ip::make_address(ip), port);
-
-        auto data = RecordAudio(recorder);
-        if (data.empty()) {
             continue;
         }
 
-        size_t total_size = data.size();
-        size_t total_chunks = (total_size + CHUNK_DATA_SIZE - 1) / CHUNK_DATA_SIZE;
+        udp::endpoint endpoint(boost::asio::ip::make_address(ip), static_cast<unsigned short>(port));
+
+        auto audio = RecordAudio();
+        if (audio.empty()) {
+            std::cerr << "Nothing recorded" << std::endl;
+            continue;
+        }
+
         uint32_t message_id = GenerateMessageId();
+        size_t total_chunks = (audio.size() + CHUNK_DATA_SIZE - 1) / CHUNK_DATA_SIZE;
 
         std::cout << "Sending message_id=" << message_id
-                  << " bytes=" << total_size
+                  << " bytes=" << audio.size()
                   << " chunks=" << total_chunks << std::endl;
 
-        for (size_t i = 0; i < total_chunks; ++i) {
+        for (size_t i = 0; i < total_chunks; i++) {
+            PacketHeader header{};
+            header.magic = MAGIC;
+            header.message_id = message_id;
+            header.total_size = static_cast<uint32_t>(audio.size());
+            header.chunk_index = static_cast<uint16_t>(i);
+            header.chunk_count = static_cast<uint16_t>(total_chunks);
+
             size_t offset = i * CHUNK_DATA_SIZE;
-            size_t payload_size = std::min(static_cast<size_t>(CHUNK_DATA_SIZE),
-                                           total_size - offset);
+            size_t size = std::min(static_cast<size_t>(CHUNK_DATA_SIZE), audio.size() - offset);
+            header.payload_size = static_cast<uint16_t>(size);
 
-            PacketHeader host_header{};
-            host_header.magic = MAGIC;
-            host_header.message_id = message_id;
-            host_header.total_size = static_cast<uint32_t>(total_size);
-            host_header.chunk_index = static_cast<uint16_t>(i);
-            host_header.chunk_count = static_cast<uint16_t>(total_chunks);
-            host_header.payload_size = static_cast<uint16_t>(payload_size);
+            PacketHeader net = ToNetwork(header);
 
-            PacketHeader net_header = ToNetwork(host_header);
-
-            std::vector<char> packet(sizeof(PacketHeader) + payload_size);
-            std::memcpy(packet.data(), &net_header, sizeof(PacketHeader));
-            std::memcpy(packet.data() + sizeof(PacketHeader),
-                        data.data() + offset,
-                        payload_size);
+            std::vector<char> packet(sizeof(net) + size);
+            std::memcpy(packet.data(), &net, sizeof(net));
+            std::memcpy(packet.data() + sizeof(net), audio.data() + offset, size);
 
             size_t sent = socket.send_to(boost::asio::buffer(packet), endpoint);
 
-            std::cout << "Sent chunk "
-                      << (i + 1) << "/" << total_chunks
-                      << ", bytes = " << sent << std::endl;
+            std::cout << "Sent chunk " << (i + 1) << "/" << total_chunks
+                      << " (" << sent << " bytes)" << std::endl;
 
             std::this_thread::sleep_for(5ms);
         }
 
-        std::cout << "All chunks sent successfully" << std::endl;
+        std::cout << "Message sent." << std::endl;
     }
 }
 
-}  // namespace
-
 int main(int argc, char* argv[]) {
+    if (argc != 3) {
+        std::cout << "Usage: radio server <port> | radio client <port>" << std::endl;
+        return 1;
+    }
+
+    std::string mode = argv[1];
+    int port = std::stoi(argv[2]);
+
+    if (port <= 0 || port > 65535) {
+        std::cerr << "Invalid port: " << port << std::endl;
+        return 1;
+    }
+
     try {
-        if (argc != 3) {
-            std::cerr << "Usage:\n"
-                      << argv[0] << " server <port>\n"
-                      << argv[0] << " client <port>\n";
-            return 1;
-        }
-
-        std::string mode = argv[1];
-        int port_value = std::stoi(argv[2]);
-
-        if (port_value <= 0 || port_value > 65535) {
-            std::cerr << "Invalid port" << std::endl;
-            return 1;
-        }
-
-        uint16_t port = static_cast<uint16_t>(port_value);
-
         if (mode == "server") {
             StartServer(port);
         } else if (mode == "client") {
             StartClient(port);
         } else {
-            std::cerr << "Mode must be client or server" << std::endl;
+            std::cout << "Mode must be 'server' or 'client'" << std::endl;
             return 1;
         }
-
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "Fatal error: " << e.what() << std::endl;
         return 1;
     }
 
