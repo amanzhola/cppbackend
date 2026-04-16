@@ -1,0 +1,153 @@
+# 🌐 HTTP Server Lesson 10_0_1 (JSON API)
+
+---
+
+## 🚀 Обзор
+
+| 📌 Параметр   | 💡 Значение        |
+| ------------- | ------------------ |
+| Тип сервера   | HTTP (Boost.Beast) |
+| Формат ответа | JSON               |
+| Протокол      | TCP                |
+| Порт          | 8080               |
+| Версия        | lesson_10_0_1      |
+
+---
+
+## 🧠 Возможности
+
+| 🌐 Routes  | ⚙️ Build | 🔍 Debug |
+| ---------- | -------- | -------- |
+| `/` → Main | cmake    | curl     |
+| `/hello`   | conan    | logs     |
+| `/bye`     | boost    | terminal |
+| `/unknown` | beast    | status   |
+
+---
+
+# 🌐 Маршруты
+
+| URL        | Ответ                     | Статус |
+| ---------- | ------------------------- | ------ |
+| `/`        | `{"message":"Main page"}` | 200    |
+| `/hello`   | `{"message":"Hello!"}`    | 200    |
+| `/bye`     | `{"message":"Goodbye!"}`  | 200    |
+| `/unknown` | `{"error":"404"}`         | 404    |
+
+---
+
+# ⚙️ Сборка
+
+```bash
+mkdir build
+cd build
+conan install .. --build=missing
+cmake ..
+cmake --build .
+```
+
+---
+
+# ▶️ Запуск
+
+```bash
+./bin/server
+```
+
+---
+
+# 🔍 Проверка и результат
+
+| 🔍 Проверка (curl)                                                                                                                                | 📥 Результат                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `bash<br>curl http://localhost:8080/<br>curl http://localhost:8080/hello<br>curl http://localhost:8080/bye<br>curl http://localhost:8080/unknown` | `json<br>{"message":"Main page"}<br>{"message":"Hello!"}<br>{"message":"Goodbye!"}<br>{"error":"404"}` |
+
+---
+
+# 🖥 Логи и HTTP
+
+| 🖥 Логи сервера                                                                                                                                       | 🌐 HTTP Ответ                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `text<br>Connection received<br>GET /<br>Connection received<br>GET /hello<br>Connection received<br>GET /bye<br>Connection received<br>GET /unknown` | `http<br>HTTP/1.1 200 OK<br>Content-Type: application/json<br>Content-Length: ...<br><br>{"message":"Hello!"}` |
+
+---
+
+# 🧩 Логика обработки
+
+| Шаг | Действие              |
+| --- | --------------------- |
+| 1   | accept соединение     |
+| 2   | read HTTP request     |
+| 3   | анализ `req.target()` |
+| 4   | выбор маршрута        |
+| 5   | формирование JSON     |
+| 6   | write response        |
+
+---
+
+# 🔥 Сравнение
+
+| Версия        | Ответ      | Возможности      |
+| ------------- | ---------- | ---------------- |
+| lesson_10_0   | text/plain | базовые маршруты |
+| lesson_10_0_1 | JSON       | API стиль        |
+
+---
+
+# ⚠️ Важно
+
+| Проблема       | Причина      | Решение               |
+| -------------- | ------------ | --------------------- |
+| curl прилипает | нет `\n`     | добавить `\n`         |
+| ошибка         | нет write    | проверить http::write |
+| 404            | нет маршрута | добавить handler      |
+
+---
+
+# 🧠 Архитектура
+
+```text
+Client (curl / browser)
+        ↓
+    TCP socket
+        ↓
+    HTTP request
+        ↓
+    make_response()
+        ↓
+    JSON response
+```
+
+---
+
+# 🧪 Примеры
+
+| Команда       | Результат |
+| ------------- | --------- |
+| curl /        | Main page |
+| curl /hello   | Hello     |
+| curl /bye     | Goodbye   |
+| curl /unknown | 404       |
+
+---
+
+# 🏁 Итог
+
+| ✔ Что сделано |
+| ------------- |
+| маршрутизация |
+| JSON API      |
+| статус-коды   |
+| HTTP сервер   |
+
+---
+
+## 🚀 Формула
+
+```text
+req.target() → JSON → HTTP response
+```
+
+---
+
+🔥 Это уже уровень backend API
