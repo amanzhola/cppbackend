@@ -43,7 +43,7 @@ StringResponse MakeResponse(const StringRequest& req) {
         StringResponse response{http::status::method_not_allowed, req.version()};
         response.set(http::field::server, "Lesson10_14");
         response.set(http::field::content_type, "text/plain; charset=utf-8");
-        response.keep_alive(req.keep_alive());
+        response.keep_alive(false);
         response.body() = "Only GET method is supported\n";
         response.prepare_payload();
         return response;
