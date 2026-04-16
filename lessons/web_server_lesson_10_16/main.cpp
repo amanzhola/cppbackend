@@ -46,7 +46,7 @@ void DumpRequest(const StringRequest& req) {
 StringResponse MakeHelloResponse(const StringRequest& request) {
     StringResponse response(http::status::ok, request.version());
     response.set(http::field::content_type, "text/html"sv);
-    response.body() = "<strong>Hello</strong>\n"s;
+    response.body() = "<strong>Hello</strong>"s;
 
     response.content_length(response.body().size());
     response.keep_alive(request.keep_alive());
