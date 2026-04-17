@@ -49,7 +49,7 @@ StringResponse HandleRequest(StringRequest&& req) {
 
     const auto make_invalid_method_response = [&req]() {
         auto response = MakeStringResponse(http::status::method_not_allowed,
-                                           "Invalid method."sv,
+                                           "Invalid method"sv,
                                            req.version(),
                                            req.keep_alive(),
                                            ContentType::TEXT_HTML);
