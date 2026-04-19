@@ -8,6 +8,12 @@ namespace http_server {
 
 using namespace std::literals;
 
+namespace {
+constexpr std::string_view kReadOp = "read"sv;
+constexpr std::string_view kWriteOp = "write"sv;
+constexpr std::string_view kShutdownOp = "shutdown"sv;
+}  // namespace
+
 void ReportError(beast::error_code ec, std::string_view what) {
     std::cout << what << ": "sv << ec.message() << std::endl;
 }
@@ -37,7 +43,7 @@ void SessionBase::OnRead(beast::error_code ec, [[maybe_unused]] std::size_t byte
     }
 
     if (ec) {
-        return ReportError(ec, "read"sv);
+        return ReportError(ec, kReadOp);
     }
 
     HandleRequest(std::move(request_));
@@ -47,7 +53,7 @@ void SessionBase::OnWrite(bool close,
                           beast::error_code ec,
                           [[maybe_unused]] std::size_t bytes_written) {
     if (ec) {
-        return ReportError(ec, "write"sv);
+        return ReportError(ec, kWriteOp);
     }
 
     if (close) {
@@ -60,6 +66,10 @@ void SessionBase::OnWrite(bool close,
 void SessionBase::Close() {
     beast::error_code ec;
     stream_.socket().shutdown(tcp::socket::shutdown_send, ec);
+
+    if (ec) {
+        ReportError(ec, kShutdownOp);
+    }
 }
 
 }  // namespace http_server

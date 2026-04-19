@@ -15,6 +15,9 @@ namespace {
 
 using namespace std::literals;
 
+constexpr std::string_view kOpenConfigError = "Failed to open config file"sv;
+constexpr std::string_view kParseConfigError = "Failed to parse JSON config file"sv;
+
 int ReadInt(const json::object& obj, std::string_view key) {
     return static_cast<int>(obj.at(key.data()).as_int64());
 }
@@ -75,13 +78,20 @@ model::Map ParseMap(const json::object& map_obj) {
 model::Game LoadGame(const std::filesystem::path& json_path) {
     std::ifstream input(json_path);
     if (!input.is_open()) {
-        throw std::runtime_error("Failed to open config file");
+        throw std::runtime_error(std::string(kOpenConfigError) + ": " + json_path.string());
     }
 
     std::ostringstream buffer;
     buffer << input.rdbuf();
 
-    auto root = json::parse(buffer.str());
+    json::value root;
+    try {
+        root = json::parse(buffer.str());
+    } catch (const std::exception& ex) {
+        throw std::runtime_error(
+            std::string(kParseConfigError) + " '" + json_path.string() + "': " + ex.what());
+    }
+
     const auto& root_obj = root.as_object();
 
     model::Game game;
