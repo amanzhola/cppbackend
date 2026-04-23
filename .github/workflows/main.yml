@@ -11,7 +11,6 @@ permissions:
   pull-requests: write
   issues: read
 
-
 jobs:
   sprint_1:
     if: github.repository_owner != 'cpppracticum'
@@ -80,7 +79,7 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_2:
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
@@ -90,7 +89,6 @@ jobs:
         - /var/run/docker.sock:/var/run/docker.sock
       options: --name main-container
     steps:
-
       - name: get docker network
         run: echo "DOCKER_NETWORK=$(docker inspect main-container -f '{{range $k, $v := .NetworkSettings.Networks}}{{printf "%s" $k}}{{end}}')" >> $GITHUB_ENV
 
@@ -144,12 +142,10 @@ jobs:
           cd cpp-backend-tests-practicum/scripts/sprint2
           ./command_line/run.sh
 
-
   sprint_3:
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     steps:
-
       - name: Checkout code & tests
         uses: actions/checkout@v3
         with:
@@ -260,10 +256,9 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_4:
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     steps:
-
       - name: Checkout code & tests
         uses: actions/checkout@v3
         with:
@@ -288,7 +283,7 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_3_with_server:
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend_server:latest
@@ -301,7 +296,6 @@ jobs:
         ports:
           - 8080:8080
     steps:
-
       - name: Checkout code & tests
         uses: actions/checkout@v3
         with:
@@ -331,9 +325,8 @@ jobs:
         with:
           junit_files: ${{ github.workspace }}/*.xml
 
-
   sprint_4_with_postgress:
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
