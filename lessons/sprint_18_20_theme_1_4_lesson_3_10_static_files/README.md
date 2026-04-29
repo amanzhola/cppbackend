@@ -124,7 +124,7 @@ GET /../../secret  → 403
 # 📂 Структура проекта
 
 ```text
-web_server_lesson_18_static_files/
+sprint_18_20_theme_1_4_lesson_3_10_static_files/
 ├── CMakeLists.txt
 ├── README.md
 ├── build/
