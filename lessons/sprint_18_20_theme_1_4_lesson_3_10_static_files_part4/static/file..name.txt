@@ -1,3 +1,0 @@
-This is a valid file.
-Its name contains two dots: file..name.txt
-The server must allow this file.
