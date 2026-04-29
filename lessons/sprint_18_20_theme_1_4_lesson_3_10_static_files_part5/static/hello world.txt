@@ -1,0 +1,3 @@
+HELLO WORLD from URL encoded file.
+This file has a space in its name.
+Browser may request it as /hello%20world.txt

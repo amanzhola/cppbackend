@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Filesystem Security Practice</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Практика: доступ к файлам и безопасность</h1>
+
+    <section>
+        <h2>1. Безопасный файл с двумя точками</h2>
+        <p>
+            Этот файл должен открываться, потому что две точки находятся внутри имени файла,
+            а не являются переходом в родительский каталог.
+        </p>
+        <p>
+            <a href="/file..name.txt">Открыть /file..name.txt</a>
+        </p>
+    </section>
+
+    <section>
+        <h2>2. Попытки path traversal</h2>
+        <p>Эти запросы должны быть запрещены сервером.</p>
+        <ul>
+            <li><code>/../secret.txt</code></li>
+            <li><code>/%2E%2E%2Fsecret.txt</code></li>
+            <li><code>/%2e%2e%2fsecret.txt</code></li>
+            <li><code>/images/../index.html</code></li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>3. Статика из прошлых частей</h2>
+        <img src="/images/road_vh.png" alt="road_vh" width="160">
+        <img src="/images/road_tr.png" alt="road_tr" width="160">
+        <img src="/images/road_t.png" alt="road_t" width="160">
+
+        <audio controls>
+            <source src="/audio/front_center.wav" type="audio/wav">
+            Ваш браузер не поддерживает audio.
+        </audio>
+
+        <video width="480" controls>
+            <source src="/video/reset_position.mp4" type="video/mp4">
+            Ваш браузер не поддерживает video.
+        </video>
+    </section>
+
+    <section>
+        <h2>4. API остаётся отдельным от файлов</h2>
+        <p><a href="/api/v1/maps">GET /api/v1/maps</a></p>
+        <p><a href="/api/v1/maps/map1">GET /api/v1/maps/map1</a></p>
+    </section>
+
+    <script src="/app.js"></script>
+</body>
+</html>
