@@ -146,7 +146,12 @@ RequestHandler::StringResponse RequestHandler::HandleStaticFile(
     }
 
     if (!fs::exists(requested_path) || !fs::is_regular_file(requested_path)) {
-        return MakeNotFound(version, keep_alive, "fileNotFound", "File not found");
+        StringResponse response(http::status::not_found, version);
+        response.set(http::field::content_type, "text/plain");
+        response.body() = "File not found";
+        response.content_length(response.body().size());
+        response.keep_alive(keep_alive);
+        return response;
     }
 
     std::string body = ReadFile(requested_path);
