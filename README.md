@@ -175,6 +175,7 @@ cppbackend/
 | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------- |
 | `lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files` | Урок по отдаче статических файлов: HTML, CSS, JavaScript, MIME-типы и защита путей | Переводит сервер из API-режима в полноценный веб-сервер с клиентской частью | [README](lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files/README.md) |
 | `lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part2` | Расширение урока: поддержка изображений, аудио и видео, расширенные MIME-типы | Добавляет полноценную работу с media-ресурсами (PNG, WAV, MP4) и делает сервер ближе к production | [README](lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part2/README.md) |
+| `lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part3` | Расширение урока: разделение REST API и статических файлов, URI, URL-encoding и percent-encoding | Добавляет маршрутизацию между API и static, JSON-ответы, декодирование URL-encoded путей и работу с файлами с пробелами | [README](lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part3/README.md) |
 
 ---
 
