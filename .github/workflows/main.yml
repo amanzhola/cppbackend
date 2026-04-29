@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   sprint_1:
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
