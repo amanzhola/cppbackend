@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Resources and URL Encoding Practice</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Практика: ресурсы, URI, API и URL-encoding</h1>
+
+    <section>
+        <h2>1. Статические изображения</h2>
+        <img src="/images/road_vh.png" alt="road_vh" width="160">
+        <img src="/images/road_tr.png" alt="road_tr" width="160">
+        <img src="/images/road_t.png" alt="road_t" width="160">
+        <img src="/images/tv_architecture.png" alt="tv architecture" width="420">
+    </section>
+
+    <section>
+        <h2>2. Звук WAV</h2>
+        <audio controls>
+            <source src="/audio/front_center.wav" type="audio/wav">
+            Ваш браузер не поддерживает audio.
+        </audio>
+    </section>
+
+    <section>
+        <h2>3. Видео MP4</h2>
+
+        <h3>Reset position</h3>
+        <video width="480" controls>
+            <source src="/video/reset_position.mp4" type="video/mp4">
+            Ваш браузер не поддерживает video.
+        </video>
+
+        <h3>Track vertical plane</h3>
+        <video width="480" controls>
+            <source src="/video/track_vertical_plane.mp4" type="video/mp4">
+            Ваш браузер не поддерживает video.
+        </video>
+
+        <h3>Track horizontal plane</h3>
+        <video width="480" controls>
+            <source src="/video/track_horizontal_plane.mp4" type="video/mp4">
+            Ваш браузер не поддерживает video.
+        </video>
+    </section>
+
+    <section>
+        <h2>4. URL-encoded ресурсы</h2>
+        <p>
+            <a href="/hello%20world.txt">Открыть hello world.txt через %20</a>
+        </p>
+        <p>
+            <a href="/hello+world.txt">Открыть hello world.txt через +</a>
+        </p>
+        <p>
+            <a href="/page%20with%20space.html">Открыть HTML-страницу с пробелами</a>
+        </p>
+    </section>
+
+    <section>
+        <h2>5. REST API и static routing</h2>
+        <p>
+            <a href="/api/v1/maps">Проверить GET /api/v1/maps</a>
+        </p>
+        <p>
+            <a href="/api/v1/maps/map1">Проверить GET /api/v1/maps/map1</a>
+        </p>
+    </section>
+
+    <section>
+        <h2>6. Canvas</h2>
+        <canvas id="game" width="600" height="300"></canvas>
+    </section>
+
+    <script src="/app.js"></script>
+</body>
+</html>
