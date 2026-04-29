@@ -169,6 +169,18 @@ cppbackend/
 
 ---
 
+## 🧪 Sprint 2 — Статические файлы и веб-клиент
+
+| 🧪 Папка урока второго спринта, связанного с отдачей статических файлов и клиентской частью | 📖 Что это за урок и какую задачу он решает в рамках развития HTTP-сервера | 🧠 Почему этот урок относится к следующему этапу после базового HTTP-сервера | ✅ Переход |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------- |
+| `lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files` | Урок по отдаче статических файлов: HTML, CSS, JavaScript, MIME-типы и защита путей | Переводит сервер из API-режима в полноценный веб-сервер с клиентской частью | [README](lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files/README.md) |
+| `lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part2` | Расширение урока: поддержка изображений, аудио и видео, расширенные MIME-типы | Добавляет полноценную работу с media-ресурсами (PNG, WAV, MP4) и делает сервер ближе к production | [README](lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part2/README.md) |
+| `lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part3` | Расширение урока: разделение REST API и статических файлов, URI, URL-encoding и percent-encoding | Добавляет маршрутизацию между API и static, JSON-ответы, декодирование URL-encoded путей и работу с файлами с пробелами | [README](lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part3/README.md) |
+| `lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part4` | Расширение урока: безопасный доступ к файлам, path traversal, URL Decode и canonical-проверка пути | Показывает правильную защиту static-каталога через `weakly_canonical` и проверку, что путь остаётся внутри `static_root` | [README](lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part4/README.md) |
+| `lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part5` | Расширение урока: отдача файлов через `boost::beast::http::file_body` вместо чтения в `std::string` | Делает отдачу больших static-файлов правильнее и ближе к реальному HTTP-серверу, особенно для видео, аудио и крупных изображений | [README](lessons/sprint_18_20_theme_1_4_lesson_3_10_static_files_part5/README.md) |
+
+---
+
 # 🚀 SPRINT 1
 
 ## 📦 Что находится в sprint1
