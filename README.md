@@ -181,6 +181,7 @@ cppbackend/
 | `lessons/sprint_18_20_theme_1_4_lesson_5_10_logging_patterns_part1` | Logging Patterns Part 1: запись лога в `/var/log/sample.log` | Переход к системному логированию в Linux | [README](lessons/sprint_18_20_theme_1_4_lesson_5_10_logging_patterns_part1/README.md) |
 | `lessons/sprint_18_20_theme_1_4_lesson_5_10_logging_patterns_part2` | Logging Patterns Part 2: Singleton логгер | Глобальный доступ к логированию | [README](lessons/sprint_18_20_theme_1_4_lesson_5_10_logging_patterns_part2/README.md) |
 | `lessons/sprint_18_20_theme_1_4_lesson_5_10_logging_patterns_part3` | Logging Patterns Part 3: удобное логирование через variadic template и fold expression без ручного `std::to_string` | Показывает, как сделать интерфейс логгера удобнее: передавать строки, числа и другие значения напрямую в `Logger::GetInstance().Log(...)` | [README](lessons/sprint_18_20_theme_1_4_lesson_5_10_logging_patterns_part3/README.md) |
+| `lessons/sprint_18_20_theme_1_4_lesson_5_10_logging_patterns_part4` | Logging Patterns Part 4: потокобезопасный логгер через `std::mutex` и `std::lock_guard` | Показывает проблему многопоточности: несколько потоков пишут в один лог-файл, поэтому запись нужно защищать мьютексом | [README](lessons/sprint_18_20_theme_1_4_lesson_5_10_logging_patterns_part4/README.md) |
 
 ---
 
