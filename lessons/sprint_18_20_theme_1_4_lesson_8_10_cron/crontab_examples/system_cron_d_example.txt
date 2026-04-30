@@ -1,0 +1,6 @@
+# Файл для /etc/cron.d/cron_lesson_demo
+# Формат системного cron отличается: после расписания указывается пользователь.
+
+* * * * * almusha /home/almusha/cppbackend/lessons/sprint_18_20_theme_1_4_lesson_8_10_cron/scripts/cron_hello.sh
+*/5 * * * * almusha /home/almusha/cppbackend/lessons/sprint_18_20_theme_1_4_lesson_8_10_cron/scripts/cron_status.sh
+30 3 * * * almusha /home/almusha/cppbackend/lessons/sprint_18_20_theme_1_4_lesson_8_10_cron/scripts/cron_cleanup_demo.sh
