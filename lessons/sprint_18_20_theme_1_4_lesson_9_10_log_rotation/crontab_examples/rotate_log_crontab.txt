@@ -1,0 +1,2 @@
+# Запуск ротации логов каждый день в 00:15
+15 0 * * * /home/almusha/cppbackend/lessons/sprint_18_20_theme_1_4_lesson_9_10_log_rotation/scripts/rotate_log_myapp >> /home/almusha/cppbackend/lessons/sprint_18_20_theme_1_4_lesson_9_10_log_rotation/logs/rotation_cron.log 2>&1

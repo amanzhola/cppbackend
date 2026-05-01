@@ -1,0 +1,15 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LOG_DIR="$PROJECT_DIR/logs"
+
+mkdir -p "$LOG_DIR"
+
+for i in {0..11}
+do
+    FILE_DATE="$(date --date="-${i}days" +%Y_%m_%d)"
+    echo "Log file for $FILE_DATE" > "$LOG_DIR/my_app_$FILE_DATE.log"
+done
+
+echo "Created test logs in $LOG_DIR"
