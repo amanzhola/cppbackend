@@ -1,0 +1,23 @@
+@startuml
+skinparam packageStyle rectangle
+
+package http_server
+package http_handler
+package app
+package model
+
+http_handler --> http_server : implements handler abstraction
+http_handler --> app : calls use cases
+app --> model : changes game model
+
+note bottom of model
+Model does not depend on HTTP, JSON, files or database.
+It contains core game rules.
+end note
+
+note bottom of http_handler
+RequestHandler parses HTTP requests and formats responses.
+Game rules must not live here.
+end note
+
+@enduml
