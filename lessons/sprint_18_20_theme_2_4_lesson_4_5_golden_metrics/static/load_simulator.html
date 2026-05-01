@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Load Simulator</title>
+</head>
+<body>
+    <h1>Load Simulator</h1>
+
+    <p>Эта страница создаёт нагрузку на сервер учебными запросами.</p>
+
+    <button onclick="startLoad()">Start load</button>
+    <button onclick="stopLoad()">Stop load</button>
+
+    <pre id="log"></pre>
+
+    <script>
+        let timer = null;
+
+        function write(message) {
+            const log = document.getElementById("log");
+            log.textContent += message + "\n";
+        }
+
+        function startLoad() {
+            if (timer !== null) {
+                return;
+            }
+
+            timer = setInterval(() => {
+                fetch("/")
+                    .then(response => write("GET / -> " + response.status))
+                    .catch(error => write("error: " + error));
+            }, 300);
+
+            write("load started");
+        }
+
+        function stopLoad() {
+            if (timer !== null) {
+                clearInterval(timer);
+                timer = null;
+                write("load stopped");
+            }
+        }
+    </script>
+</body>
+</html>
