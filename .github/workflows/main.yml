@@ -79,8 +79,8 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_2:
-    # if: ${{ false }}
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
+    # if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
@@ -116,7 +116,7 @@ jobs:
           ./cpp-backend-tests-practicum/scripts/sprint2/logger/run.sh
 
       - name: run tests sprint2 server_logging
-        # if: ${{ false }}
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint2
           ./server_logging/run.sh

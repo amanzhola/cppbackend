@@ -258,7 +258,7 @@ cppbackend/
 | `move_players` | Задача второго спринта, связанная с перемещением игроков и обновлением игрового состояния | Будет оформлена позже отдельным README внутри solution, а пока фиксируется как часть общей структуры sprint2 | Задача учтена |
 | `static_content` | Уже реализованная задача по отдаче статических файлов, разделению REST API и static content, MIME-типам, HEAD, Content-Length, URL-encoding и защите от path traversal | Для этой задачи уже есть подробный README в `solution`, поэтому из корневого README можно сразу перейти к полному разбору | [Открыть README](sprint2/problems/static_content/solution/README.md) |
 | `time_control` | Задача второго спринта, связанная с управлением временем, tick-логикой и развитием серверной игровой модели | Будет оформлена позже отдельным README внутри solution, а пока фиксируется как часть общей структуры sprint2 | Задача учтена |
-| server_logging | Уже реализованная задача второго спринта по JSON-логированию игрового HTTP-сервера через Boost.Log: запуск сервера, остановка сервера, получение запроса, отправка ответа, ошибки, IP клиента, response_time, HTTP code и content_type | Для этой задачи уже есть подробный README в solution, поэтому из корневого README можно сразу перейти к полному разбору JSON-логирования сервера | Открыть README |
+| server_logging | Уже реализованная задача второго спринта по JSON-логированию игрового HTTP-сервера через Boost.Log: запуск сервера, остановка сервера, получение запроса, отправка ответа, ошибки, IP клиента, response_time, HTTP code и content_type | Для этой задачи уже есть подробный README в solution, поэтому из корневого README можно сразу перейти к полному разбору JSON-логирования сервера | [Открыть README](sprint2/problems/server_logging/solution/README.md) |server_logging | Уже реализованная задача второго спринта по JSON-логированию игрового HTTP-сервера через Boost.Log: запуск сервера, остановка сервера, получение запроса, отправка ответа, ошибки, IP клиента, response_time, HTTP code и content_type | Для этой задачи уже есть подробный README в solution, поэтому из корневого README можно сразу перейти к полному разбору JSON-логирования сервера | [Открыть README](sprint2/problems/server_logging/solution/README.md) |
 
 ---
 
@@ -273,7 +273,7 @@ cppbackend/
 | `sprint2/problems/move_players` | Каталог задачи второго спринта уже есть в структуре проекта; подробный README будет добавлен позже | README будет добавлен позже | Навигация зарезервирована |
 | `sprint2/problems/static_content` | Каталог уже содержит реализованное решение и подробный README внутри `solution` | [README solution](sprint2/problems/static_content/solution/README.md) | Навигация готова |
 | `sprint2/problems/time_control` | Каталог задачи второго спринта уже есть в структуре проекта; подробный README будет добавлен позже | README будет добавлен позже | Навигация зарезервирована |
-| sprint2/problems/server_logging | Каталог уже содержит реализованное решение JSON-логирования игрового HTTP-сервера через Boost.Log с выводом в stdout, логированием request received, response sent, server started, server exited и error | README solution | Навигация готова |
+| sprint2/problems/server_logging | Каталог уже содержит реализованное решение JSON-логирования игрового HTTP-сервера через Boost.Log с выводом в stdout, логированием request received, response sent, server started, server exited и error | [README solution](sprint2/problems/server_logging/solution/README.md) | Навигация готова |
 
 ---
 
