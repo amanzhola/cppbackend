@@ -11,7 +11,7 @@ RUN apt update && \
 # Сначала зависимости
 COPY conanfile.txt /app/
 RUN mkdir /app/build && cd /app/build && \
-    conan install .. --build=missing
+    conan install .. --build=missing -s compiler.libcxx=libstdc++11
 
 # Потом исходники
 COPY ./src /app/src
@@ -26,11 +26,13 @@ FROM ubuntu:22.04 as run
 
 # Создаём отдельного пользователя
 RUN groupadd -r www && useradd -r -g www www
-USER www
 
 # Копируем собранный бинарник из stage build
 COPY --from=build /app/build/bin/game_server /app/
 COPY ./data /app/data
+COPY ./static /app/static
+
+USER www
 
 # Команда запуска контейнера
-ENTRYPOINT ["/app/game_server", "/app/data/config.json"]
+ENTRYPOINT ["/app/game_server", "/app/data/config.json", "/app/static"]
