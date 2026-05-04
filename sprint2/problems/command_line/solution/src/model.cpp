@@ -367,10 +367,13 @@ void Game::SetRandomizeSpawnPoints(bool value) noexcept {
 }
 
 GameSession& Game::FindOrCreateSession(const Map& map) {
-    for (auto& session : sessions_) {
-        if (&session.GetMap() == &map) {
-            return session;
-        }
+    auto it = std::find_if(sessions_.begin(), sessions_.end(),
+        [&map](const GameSession& session) {
+            return &session.GetMap() == &map;
+        });
+
+    if (it != sessions_.end()) {
+        return *it;
     }
 
     sessions_.emplace_back(map, randomize_spawn_points_);

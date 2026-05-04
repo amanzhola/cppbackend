@@ -35,4 +35,4 @@ COPY ./static /app/static
 USER www
 
 # Команда запуска контейнера
-ENTRYPOINT ["/app/game_server", "/app/data/config.json", "/app/static"]
+ENTRYPOINT ["/app/game_server", "-c", "/app/data/config.json", "-w", "/app/static"]
