@@ -80,7 +80,6 @@ jobs:
 
   sprint_2:
     if: ${{ false }}
-    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
