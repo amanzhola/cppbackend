@@ -1,0 +1,26 @@
+Полезные метрики Node Exporter:
+
+node_cpu_seconds_total
+Показывает суммарное время работы CPU по ядрам и режимам.
+
+node_memory_MemAvailable_bytes
+Показывает доступную оперативную память в байтах.
+
+node_filesystem_avail_bytes
+Показывает доступное место в файловой системе.
+
+node_network_receive_bytes_total
+Показывает количество полученных сетевых байт.
+
+node_network_transmit_bytes_total
+Показывает количество отправленных сетевых байт.
+
+Пример метрики с labels:
+
+node_cpu_seconds_total{cpu="0", instance="localhost:9100", job="node", mode="idle"}
+
+Labels:
+cpu      — номер ядра
+instance — источник данных
+job      — имя job из prometheus.yml
+mode     — режим CPU

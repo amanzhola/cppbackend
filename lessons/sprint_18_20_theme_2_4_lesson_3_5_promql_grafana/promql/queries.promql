@@ -1,0 +1,38 @@
+# 1. Все значения CPU-метрики
+node_cpu_seconds_total
+
+# 2. Только idle-режим CPU
+node_cpu_seconds_total{mode="idle"}
+
+# 3. Idle-режим CPU за последнюю минуту
+node_cpu_seconds_total{mode="idle"}[1m]
+
+# 4. Скорость изменения idle-времени CPU
+rate(node_cpu_seconds_total{mode="idle"}[1m])
+
+# 5. Загрузка CPU в процентах по каждому ядру
+(1 - rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100
+
+# 6. Средняя загрузка CPU по всем ядрам
+avg(1 - rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100
+
+# 7. Общий размер файловой системы
+node_filesystem_size_bytes
+
+# 8. Свободное место файловой системы
+node_filesystem_free_bytes
+
+# 9. Процент занятого диска без фильтра
+(1 - node_filesystem_free_bytes / node_filesystem_size_bytes) * 100
+
+# 10. Процент занятого диска для /dev/vda2 из урока
+(1 - node_filesystem_free_bytes{device="/dev/vda2"} / node_filesystem_size_bytes{device="/dev/vda2"}) * 100
+
+# 11. Процент занятого диска для /dev/vda1, если на сервере основной диск /dev/vda1
+(1 - node_filesystem_free_bytes{device="/dev/vda1"} / node_filesystem_size_bytes{device="/dev/vda1"}) * 100
+
+# 12. Использование RAM по формуле урока
+(1 - node_memory_MemFree_bytes / node_memory_MemTotal_bytes) * 100
+
+# 13. Более практичный вариант RAM через MemAvailable
+(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100

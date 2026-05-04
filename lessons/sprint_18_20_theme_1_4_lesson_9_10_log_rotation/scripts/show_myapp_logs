@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LOG_DIR="$PROJECT_DIR/logs"
+
+echo "Log directory: $LOG_DIR"
+echo
+
+ls -lh "$LOG_DIR" | grep "my_app_" || true

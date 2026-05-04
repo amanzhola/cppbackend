@@ -1,0 +1,21 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LOG_DIR="$PROJECT_DIR/logs"
+
+TO_ARCHIVE="$(date --date="-2days" +%Y_%m_%d)"
+TO_DELETE="$(date --date="-10days" +%Y_%m_%d)"
+
+ARCHIVE_SOURCE="$LOG_DIR/my_app_$TO_ARCHIVE.log"
+DELETE_TARGET="$LOG_DIR/my_app_$TO_DELETE.log.gz"
+
+echo "Rotation started at $(date '+%Y-%m-%d %H:%M:%S')"
+echo "Log directory: $LOG_DIR"
+echo "File to archive: $ARCHIVE_SOURCE"
+echo "Archive to delete: $DELETE_TARGET"
+
+gzip "$ARCHIVE_SOURCE" || true
+rm "$DELETE_TARGET" || true
+
+echo "Rotation finished at $(date '+%Y-%m-%d %H:%M:%S')"

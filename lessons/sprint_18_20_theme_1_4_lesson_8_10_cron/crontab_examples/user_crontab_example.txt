@@ -1,0 +1,8 @@
+# Каждую минуту пишет строку Hello from cron
+* * * * * /home/almusha/cppbackend/lessons/sprint_18_20_theme_1_4_lesson_8_10_cron/scripts/cron_hello.sh
+
+# Каждые 5 минут пишет состояние системы
+*/5 * * * * /home/almusha/cppbackend/lessons/sprint_18_20_theme_1_4_lesson_8_10_cron/scripts/cron_status.sh
+
+# Каждый день в 03:30 запускает демонстрационную очистку
+30 3 * * * /home/almusha/cppbackend/lessons/sprint_18_20_theme_1_4_lesson_8_10_cron/scripts/cron_cleanup_demo.sh

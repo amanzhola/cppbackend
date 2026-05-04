@@ -1,0 +1,84 @@
+@startuml
+skinparam packageStyle rectangle
+
+package model {
+    class Game {
+        maps
+        sessions
+    }
+
+    class Map {
+        id
+        name
+        roads
+        buildings
+        offices
+    }
+
+    class Road
+    class Building
+    class Office
+
+    class GameSession {
+        map
+        dogs
+        AddDog(name)
+    }
+
+    class Dog {
+        id
+        name
+        position
+        speed
+        direction
+        score
+    }
+
+    Game "1" o-- "*" Map
+    Game "1" o-- "*" GameSession
+    GameSession "*" --> "1" Map
+    GameSession "1" o-- "*" Dog
+    Map "1" o-- "*" Road
+    Map "1" o-- "*" Building
+    Map "1" o-- "*" Office
+}
+
+package app {
+    class Player {
+        token
+        session
+        dog_id
+    }
+
+    class Players {
+        Add()
+        FindByToken()
+    }
+
+    class JoinGameUseCase {
+        Join()
+    }
+
+    Players "1" o-- "*" Player
+    Player "*" --> "1" model.GameSession
+    Player "*" --> "1" model.Dog
+    JoinGameUseCase --> Players
+    JoinGameUseCase --> model.GameSession
+}
+
+package http_handler {
+    class RequestHandler {
+        HandleApiRequest()
+        HandleFileRequest()
+    }
+
+    RequestHandler --> app.JoinGameUseCase
+}
+
+package http_server {
+    interface RequestHandlerInterface
+}
+
+http_server.RequestHandlerInterface <|.. http_handler.RequestHandler
+
+@enduml
