@@ -1,5 +1,8 @@
 #include "request_handler.h"
 
+#include "request_handler.h"
+#include "json_serializer.h"
+
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
@@ -716,64 +719,11 @@ RequestHandler::StringResponse RequestHandler::HandleGameTick(const StringReques
 }
 
 json::value RequestHandler::SerializeMaps() const {
-    json::array maps;
-
-    for (const auto& map : game_.GetMaps()) {
-        json::object obj;
-        obj["id"] = *map.GetId();
-        obj["name"] = map.GetName();
-        maps.emplace_back(std::move(obj));
-    }
-
-    return maps;
+    return json_serializer::SerializeMaps(game_.GetMaps());
 }
 
 json::value RequestHandler::SerializeMap(const model::Map& map) const {
-    json::object obj;
-    obj["id"] = *map.GetId();
-    obj["name"] = map.GetName();
-
-    json::array roads;
-    for (const auto& road : map.GetRoads()) {
-        json::object road_obj;
-        road_obj["x0"] = road.GetStart().x;
-        road_obj["y0"] = road.GetStart().y;
-
-        if (road.IsHorizontal()) {
-            road_obj["x1"] = road.GetEnd().x;
-        } else {
-            road_obj["y1"] = road.GetEnd().y;
-        }
-
-        roads.emplace_back(std::move(road_obj));
-    }
-    obj["roads"] = std::move(roads);
-
-    json::array buildings;
-    for (const auto& building : map.GetBuildings()) {
-        json::object building_obj;
-        const auto& bounds = building.GetBounds();
-        building_obj["x"] = bounds.position.x;
-        building_obj["y"] = bounds.position.y;
-        building_obj["w"] = bounds.size.width;
-        building_obj["h"] = bounds.size.height;
-        buildings.emplace_back(std::move(building_obj));
-    }
-    obj["buildings"] = std::move(buildings);
-
-    json::array offices;
-    for (const auto& office : map.GetOffices()) {
-        json::object office_obj;
-        office_obj["id"] = *office.GetId();
-        office_obj["x"] = office.GetPosition().x;
-        office_obj["y"] = office.GetPosition().y;
-        office_obj["offsetX"] = office.GetOffset().dx;
-        office_obj["offsetY"] = office.GetOffset().dy;
-        offices.emplace_back(std::move(office_obj));
-    }
-    obj["offices"] = std::move(offices);
-
-    return obj;
+    return json_serializer::SerializeMap(map);
 }
 
 }  // namespace http_handler
