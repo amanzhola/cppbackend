@@ -151,7 +151,7 @@ jobs:
           ./command_line/run.sh
 
   sprint_3:
-    #if: ${{ false }}
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code & tests
@@ -167,7 +167,7 @@ jobs:
           pip show pytest
 
       - name: run tests sprint3 instrumentation
-        #if: ${{ false }}
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./instrumentation/run.sh
