@@ -152,7 +152,7 @@ jobs:
 
   sprint_3:
     if: ${{ false }}
-    if: github.repository_owner != 'cpppracticum'
+    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code & tests
@@ -301,7 +301,7 @@ jobs:
 
   sprint_3_with_server:
     if: ${{ false }}
-    if: github.repository_owner != 'cpppracticum'
+    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend_server:latest
@@ -337,7 +337,7 @@ jobs:
 
   sprint_4_with_postgress:
     if: ${{ false }}
-    if: github.repository_owner != 'cpppracticum'
+    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
