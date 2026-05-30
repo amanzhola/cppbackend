@@ -34,6 +34,7 @@
 | `urldecode`             | Практическая задача по тестированию функции `UrlDecode`: декодирование `%XX`, превращение `+` в пробел, обработка некорректных percent-последовательностей и проверка через Boost.Test | Показывает, как покрывать edge cases тестами и исправлять ошибки в логике URL-decoding | [README](../../../sprint3/problems/urldecode/solution/README.md) |
 | `lesson_3_9_google_test`| Использование Google Test через Conan и CMake: подключение `gtest/1.10.0`, написание тестов через `TEST`, проверки `ASSERT_TRUE` / `ASSERT_FALSE`, запуск через CTest и исправление ABI-ошибки `[abi:cxx11]` | Показывает, как подключать Google Test в C++ проект и правильно собирать зависимости Conan с ABI `libstdc++11` | [README](lesson_3_9_google_test/README.md) |
 | `urlencode`             | Практическая задача по реализации и тестированию `UrlEncode`: кодирование пробелов в `+`, reserved-символов в `%XX`, управляющих символов и байтов `128+` через `unsigned char`, проверка через Google Test и CTest | Закрепляет тестирование edge cases и показывает обратную задачу к `urldecode` — корректное URL-encoding преобразование строки | [README](../../../sprint3/problems/urlencode/solution/README.md) |
+| `lesson_4_9_catch2`     | Практика unit-тестирования C++ через Catch2, Conan, CMake и CTest: тестирование функции `IsLeapYear`, использование `TEST_CASE`, `CHECK`, `REQUIRE` и запуск тестов через `ctest` | Показывает полный рабочий цикл подключения Catch2 к C++ проекту и организации тестов отдельно от основного приложения | [README](lesson_4_9_catch2/README.md) |
 
 ---
 
