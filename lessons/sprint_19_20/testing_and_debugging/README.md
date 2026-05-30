@@ -36,6 +36,7 @@
 | `urlencode`             | Практическая задача по реализации и тестированию `UrlEncode`: кодирование пробелов в `+`, reserved-символов в `%XX`, управляющих символов и байтов `128+` через `unsigned char`, проверка через Google Test и CTest | Закрепляет тестирование edge cases и показывает обратную задачу к `urldecode` — корректное URL-encoding преобразование строки | [README](../../../sprint3/problems/urlencode/solution/README.md) |
 | `lesson_4_9_catch2`     | Практика unit-тестирования C++ через Catch2, Conan, CMake и CTest: тестирование функции `IsLeapYear`, использование `TEST_CASE`, `CHECK`, `REQUIRE` и запуск тестов через `ctest` | Показывает полный рабочий цикл подключения Catch2 к C++ проекту и организации тестов отдельно от основного приложения | [README](lesson_4_9_catch2/README.md) |
 | `htmldecode`            | Практическая задача Sprint 3 по декодированию HTML-сущностей: `&lt;`, `&gt;`, `&amp;`, `&apos;`, `&quot;`, поддержка верхнего регистра, optional `;`, unit-тесты через Catch2, Conan и CMake | Показывает, как вынести алгоритм в отдельную функцию, покрыть его тестами и проверить через консольное приложение | [README](../../../sprint3/problems/htmldecode/solution/README.md) |
+| `lesson_5_9_tdd`        | Практика TDD на примере класса `TV`: стадия RED с падающим тестом, стадия GREEN с минимальным исправлением, Boost.Test, Conan, CMake и CTest | Показывает базовый цикл Test Driven Development: сначала пишем тест, видим падение, затем исправляем код минимально до зелёного результата | [README](lesson_5_9_tdd/README.md) |
 
 ---
 
