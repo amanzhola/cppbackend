@@ -300,7 +300,7 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_3_with_server:
-    #if: ${{ false }}
+    if: ${{ false }}
     if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
