@@ -260,7 +260,7 @@ jobs:
           ./ammo/run.sh
 
       - name: run tests sprint3 load
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./load/run.sh
