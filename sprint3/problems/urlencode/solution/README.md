@@ -278,4 +278,6 @@ URL-encoding требует аккуратной обработки специа
 
 ## ⬅️ Назад
 
-[Вернуться к Testing and Debugging](../../../lessons/sprint_19_20/testing_and_debugging/README.md)
+[Вернуться к Testing and Debugging](../../../../lessons/sprint_19_20/testing_and_debugging/README.md)
+
+[Вернуться в общий README репозитория](../../../../README.md)
