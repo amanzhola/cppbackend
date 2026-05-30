@@ -151,7 +151,7 @@ jobs:
           ./command_line/run.sh
 
   sprint_3:
-    #if: ${{ false }}
+    if: ${{ false }}
     if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     steps:
@@ -168,20 +168,20 @@ jobs:
           pip show pytest
 
       - name: run tests sprint3 instrumentation
-        #if: ${{ false }}
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./instrumentation/run.sh
 
       - name: Load FlameGraph
-        #if: ${{ false }}
+        if: ${{ false }}
         uses: actions/checkout@v3
         with:
           repository: 'brendangregg/FlameGraph'
           path: ${{ github.workspace }}/sprint3/problems/flamegraph/solution/FlameGraph
 
       - name: run tests sprint3 flamegraph
-        #if: ${{ false }}
+        if: ${{ false }}
         run: |
           ./cpp-backend-tests-practicum/scripts/sprint1/map_json/build.sh
           cd cpp-backend-tests-practicum/scripts/sprint3
@@ -255,7 +255,7 @@ jobs:
           ./scores/run.sh
 
       - name: run tests sprint3 ammo
-        #if: ${{ false }}
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./ammo/run.sh
@@ -336,7 +336,7 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_4_with_postgress:
-    #if: ${{ false }}
+    if: ${{ false }}
     if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
