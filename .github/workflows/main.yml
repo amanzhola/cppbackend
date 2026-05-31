@@ -168,82 +168,82 @@ jobs:
           pip show pytest
 
       - name: run tests sprint3 instrumentation
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./instrumentation/run.sh
 
       - name: Load FlameGraph
-        if: ${{ false }}
+        #if: ${{ false }}
         uses: actions/checkout@v3
         with:
           repository: 'brendangregg/FlameGraph'
           path: ${{ github.workspace }}/sprint3/problems/flamegraph/solution/FlameGraph
 
       - name: run tests sprint3 flamegraph
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           ./cpp-backend-tests-practicum/scripts/sprint1/map_json/build.sh
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./flamegraph/run.sh
 
       - name: run tests sprint3 gen_objects
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gen_objects/run.sh
 
       - name: run tests sprint3 static_lib
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           pip show pytest
           ./static_lib/run.sh
 
       - name: run tests sprint3 gather-tests
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gather-tests/run.sh
 
       - name: run tests sprint3 gather-tests_wrong1
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gather-tests_wrong1/run.sh
 
       - name: run tests sprint3 gather-tests_wrong2
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gather-tests_wrong2/run.sh
 
       - name: run tests sprint3 gather-tests_wrong3
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gather-tests_wrong3/run.sh
 
       - name: run tests sprint3 gather-tests_wrong4
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gather-tests_wrong4/run.sh
 
       - name: run tests sprint3 gather-tests_wrong5
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gather-tests_wrong5/run.sh
 
       - name: run tests sprint3 gather
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gather/run.sh
 
       - name: run tests sprint3 find_return
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./find_return/run.sh
@@ -255,13 +255,13 @@ jobs:
           ./scores/run.sh
 
       - name: run tests sprint3 ammo
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./ammo/run.sh
 
       - name: run tests sprint3 load
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./load/run.sh
