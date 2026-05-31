@@ -243,13 +243,13 @@ jobs:
           ./gather/run.sh
 
       - name: run tests sprint3 find_return
-        #if: ${{ false }}
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./find_return/run.sh
 
       - name: run tests sprint3 scores
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./scores/run.sh
