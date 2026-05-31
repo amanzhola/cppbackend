@@ -237,7 +237,7 @@ jobs:
           ./gather-tests_wrong5/run.sh
 
       - name: run tests sprint3 gather
-        if: ${{ false }}
+        #if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint3
           ./gather/run.sh
