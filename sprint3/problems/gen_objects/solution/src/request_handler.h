@@ -57,15 +57,30 @@ public:
             return send(HandleGameTick(req));
         }
 
-        if (req.method() != http::verb::get) {
-            return send(MakeBadRequest(version, keep_alive, kBadRequestCode, kBadRequestMessage));
-        }
+        if (target == kMapsEndpoint || target.starts_with(kMapsEndpointPrefix)) {
+            if (req.method() != http::verb::get && req.method() != http::verb::head) {
+                auto response = MakeErrorResponse(
+                    version,
+                    keep_alive,
+                    http::status::method_not_allowed,
+                    "invalidMethod"sv,
+                    "Invalid method"sv
+                );
+                response.set(http::field::allow, "GET, HEAD");
+                return send(std::move(response));
+            }
 
-        if (target == kMapsEndpoint) {
-            return send(MakeJsonResponse(version, keep_alive, SerializeMaps()));
-        }
+            if (target == kMapsEndpoint) {
+                auto response = MakeJsonResponse(version, keep_alive, SerializeMaps());
 
-        if (target.starts_with(kMapsEndpointPrefix)) {
+                if (req.method() == http::verb::head) {
+                    response.body().clear();
+                    response.content_length(0);
+                }
+
+                return send(std::move(response));
+            }
+
             const std::string map_id = target.substr(kMapsEndpointPrefix.size());
 
             if (map_id.empty()) {
@@ -73,13 +88,31 @@ public:
             }
 
             if (const model::Map* map = game_.FindMap(model::Map::Id(map_id))) {
-                return send(MakeJsonResponse(version, keep_alive, SerializeMap(*map)));
+                auto response = MakeJsonResponse(version, keep_alive, SerializeMap(*map));
+
+                if (req.method() == http::verb::head) {
+                    response.body().clear();
+                    response.content_length(0);
+                }
+
+                return send(std::move(response));
             }
 
-            return send(MakeNotFound(version, keep_alive, kMapNotFoundCode, kMapNotFoundMessage));
+            auto response = MakeNotFound(version, keep_alive, kMapNotFoundCode, kMapNotFoundMessage);
+
+            if (req.method() == http::verb::head) {
+                response.body().clear();
+                response.content_length(0);
+            }
+
+            return send(std::move(response));
         }
 
         if (target.starts_with(kApiPrefix)) {
+            return send(MakeBadRequest(version, keep_alive, kBadRequestCode, kBadRequestMessage));
+        }
+
+        if (req.method() != http::verb::get && req.method() != http::verb::head) {
             return send(MakeBadRequest(version, keep_alive, kBadRequestCode, kBadRequestMessage));
         }
 
