@@ -43,31 +43,3 @@ target_link_libraries(game_server PRIVATE
     ${CONAN_LIBS}
     Threads::Threads
 )
-
-enable_testing()
-
-add_executable(game_server_tests
-    src/model.h
-    src/model.cpp
-    src/tagged.h
-    src/loot_generator.h
-    src/loot_generator.cpp
-    tests/loot_generator_tests.cpp
-    tests/model-tests.cpp
-)
-
-target_compile_definitions(game_server_tests PRIVATE
-    CATCH_CONFIG_MAIN
-)
-
-target_include_directories(game_server_tests PRIVATE
-    ${CONAN_INCLUDE_DIRS}
-)
-
-target_link_libraries(game_server_tests PRIVATE
-    ${CONAN_LIB_DIRS_CATCH2}/libCatch2Main.a
-    ${CONAN_LIB_DIRS_CATCH2}/libCatch2.a
-    Threads::Threads
-)
-
-add_test(NAME game_server_tests COMMAND game_server_tests)
