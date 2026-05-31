@@ -5,8 +5,8 @@ project(game_server CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
-conan_basic_setup(TARGETS)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
 find_package(Threads REQUIRED)
 
@@ -40,7 +40,7 @@ add_executable(game_server
 )
 
 target_link_libraries(game_server PRIVATE
-    CONAN_PKG::boost
+    ${CONAN_LIBS}
     Threads::Threads
 )
 
@@ -56,8 +56,17 @@ add_executable(game_server_tests
     tests/model-tests.cpp
 )
 
+target_compile_definitions(game_server_tests PRIVATE
+    CATCH_CONFIG_MAIN
+)
+
+target_include_directories(game_server_tests PRIVATE
+    ${CONAN_INCLUDE_DIRS}
+)
+
 target_link_libraries(game_server_tests PRIVATE
-    CONAN_PKG::catch2
+    ${CONAN_LIB_DIRS_CATCH2}/libCatch2Main.a
+    ${CONAN_LIB_DIRS_CATCH2}/libCatch2.a
     Threads::Threads
 )
 
