@@ -563,6 +563,166 @@ GET /api/v1/game/state отдаёт lostObjects
 
 ---
 
+# 🧯 Исправления для GitHub/Docker и автотестов
+
+Во время локальной разработки логика генерации потерянных объектов уже работала, но GitHub/Docker проверка выявила отличия окружения и более строгие требования к HTTP API.
+
+---
+
+## 1. Docker не видел папку `tests/`
+
+Ошибка:
+
+```text
+Cannot find source file:
+tests/loot_generator_tests.cpp
+```
+
+Причина была в Dockerfile: GitHub/Docker копировал только `src` и `CMakeLists.txt`, но не копировал `tests`.
+
+Пример проблемной логики:
+
+```dockerfile
+COPY ./src /app/src
+COPY CMakeLists.txt /app/
+```
+
+Из-за этого основной `CMakeLists.txt`, где был target `game_server_tests`, ломался внутри Docker.
+
+Исправление:
+
+```text
+убрать сборку локальных тестов из основного CMakeLists.txt,
+чтобы Docker собирал только сервер
+```
+
+Локальные тесты можно держать отдельно, но финальная Docker-сборка должна собирать сервер без зависимости от папки `tests`.
+
+---
+
+## 2. Catch2 и Boost.Test нельзя смешивать в одном тестовом target
+
+Ошибка:
+
+```text
+undefined reference to test_main(int, char**)
+libboost_test_exec_monitor.a
+```
+
+Причина:
+
+```cmake
+target_link_libraries(game_server_tests PRIVATE
+    ${CONAN_LIBS}
+    Threads::Threads
+)
+```
+
+`${CONAN_LIBS}` подтягивал не только Catch2, но и Boost.Test. В результате Boost.Test ожидал свою функцию `test_main`, хотя тесты были написаны на Catch2.
+
+Правильный принцип:
+
+```text
+если тесты написаны на Catch2,
+линковать нужно только Catch2
+```
+
+Для локального тестового target правильнее так:
+
+```cmake
+target_link_libraries(game_server_tests PRIVATE
+    CONAN_PKG::catch2
+    Threads::Threads
+)
+```
+
+Но для финальной Docker-сборки тестовый target можно вообще не собирать в основном `CMakeLists.txt`.
+
+---
+
+## 3. `/api/v1/maps/{id}` должен правильно обрабатывать HTTP-методы
+
+Автотест показал:
+
+```text
+POST /api/v1/maps/map1 -> ожидали 405, получили 400
+HEAD /api/v1/maps/map1 -> ожидали 200, получили 400
+HEAD /api/v1/maps/bad -> ожидали 404, получили 400
+```
+
+Причина была в слишком грубой проверке HTTP-метода в `request_handler`.
+
+Для route:
+
+```text
+/api/v1/maps/{id}
+```
+
+нужна логика:
+
+```text
+GET  -> 200 или 404
+HEAD -> 200 или 404
+POST/PUT/PATCH/DELETE/OPTIONS -> 405 Method Not Allowed
+```
+
+Исправление: для `maps/{id}` добавить отдельную обработку методов.
+
+Пример логики:
+
+```cpp
+if (req.method() != http::verb::get && req.method() != http::verb::head) {
+    return MakeTextResponse(
+        http::status::method_not_allowed,
+        "Invalid method",
+        req.version(),
+        req.keep_alive(),
+        ContentType::APPLICATION_JSON
+    );
+}
+```
+
+Для `HEAD` нужно сохранить правильный статус и заголовки, но очистить тело ответа.
+
+---
+
+## 4. Успешный результат
+
+После исправлений GitHub показал:
+
+```text
+29 passed
+0 failed
+```
+
+Это значит:
+
+```text
+Docker собрал сервер
+сервер запустился
+/api/v1/maps/{id} отдаёт lootTypes
+/api/v1/game/state отдаёт lostObjects
+HEAD/GET/405/404 работают как ждёт автотест
+```
+
+---
+
+## 🧠 Главный вывод
+
+Локальная логика генерации предметов была рабочей, но автотест проверял ещё:
+
+```text
+Docker-сборку
+структуру CMake
+точную линковку тестов
+строгие HTTP-коды
+HEAD-поведение
+```
+
+Поэтому финальное исправление касалось не только `loot_generator`, но и окружения сборки плюс маршрутизации API.
+
+---
+
 ## ⬅️ Назад
 
 [Вернуться к Testing and Debugging](../../../../lessons/sprint_19_20/testing_and_debugging/README.md)
