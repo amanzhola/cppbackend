@@ -1,12 +1,23 @@
 #include "collision_detector.h"
 
 #include <algorithm>
-#include <cassert>
+
+namespace {
+
+constexpr double ZERO_DISTANCE = 0.0;
+constexpr double NOT_ON_SEGMENT_PROJ_RATIO = -1.0;
+
+}  // namespace
 
 namespace collision_detector {
 
 CollectionResult TryCollectPoint(geom::Point2D a, geom::Point2D b, geom::Point2D c) {
-    assert(b.x != a.x || b.y != a.y);
+    if (b.x == a.x && b.y == a.y) {
+      return CollectionResult{
+        .sq_distance = ZERO_DISTANCE,
+        .proj_ratio = NOT_ON_SEGMENT_PROJ_RATIO,
+      };
+    }
 
     const double u_x = c.x - a.x;
     const double u_y = c.y - a.y;

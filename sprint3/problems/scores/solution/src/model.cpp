@@ -19,6 +19,12 @@ struct DogMove {
     Position finish;
 };
 
+// Collision detector expects radius, not full width.
+// Item width = 0.0, office width = 0.5, dog width = 0.6.
+constexpr double ITEM_RADIUS = 0.0;
+constexpr double OFFICE_RADIUS = 0.5 / 2.0;
+constexpr double DOG_RADIUS = 0.6 / 2.0;
+
 class LootProvider : public collision_detector::ItemGathererProvider {
 public:
     LootProvider(const std::vector<LostObject>& items,
@@ -32,9 +38,11 @@ public:
     }
 
     collision_detector::Item GetItem(size_t idx) const override {
+        const auto& item = items_.at(idx);
+
         return {
-            {items_[idx].position.x, items_[idx].position.y},
-            0.0
+            {item.position.x, item.position.y},
+            ITEM_RADIUS
         };
     }
 
@@ -43,10 +51,12 @@ public:
     }
 
     collision_detector::Gatherer GetGatherer(size_t idx) const override {
+        const auto& dog = dogs_.at(idx);
+
         return {
-            {dogs_[idx].start.x, dogs_[idx].start.y},
-            {dogs_[idx].finish.x, dogs_[idx].finish.y},
-            0.3
+            {dog.start.x, dog.start.y},
+            {dog.finish.x, dog.finish.y},
+            DOG_RADIUS
         };
     }
 
@@ -68,14 +78,14 @@ public:
     }
 
     collision_detector::Item GetItem(size_t idx) const override {
-        const Office& office = offices_[idx];
+        const Office& office = offices_.at(idx);
 
         return {
             {
                 static_cast<double>(office.GetPosition().x),
                 static_cast<double>(office.GetPosition().y)
             },
-            0.25
+            OFFICE_RADIUS
         };
     }
 
@@ -84,10 +94,12 @@ public:
     }
 
     collision_detector::Gatherer GetGatherer(size_t idx) const override {
+        const auto& dog = dogs_.at(idx);
+
         return {
-            {dogs_[idx].start.x, dogs_[idx].start.y},
-            {dogs_[idx].finish.x, dogs_[idx].finish.y},
-            0.3
+            {dog.start.x, dog.start.y},
+            {dog.finish.x, dog.finish.y},
+            DOG_RADIUS
         };
     }
 
@@ -379,10 +391,10 @@ void GameSession::Update(double delta_seconds) {
     std::unordered_set<LostObject::Id> removed_objects;
 
     for (const GameEvent& event : events) {
-        Dog& dog = *moves[event.dog_index].dog;
+        Dog& dog = *moves.at(event.dog_index).dog;
 
         if (event.type == GameEvent::Type::Loot) {
-            const LostObject& object = loot_vector[event.object_index];
+            const LostObject& object = loot_vector.at(event.object_index);
 
             if (removed_objects.contains(object.id)) {
                 continue;
