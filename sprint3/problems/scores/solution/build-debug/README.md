@@ -335,6 +335,6 @@ Backtrace
 
 ## ⬅️ Назад
 
-[Вернуться к Collision Detection and Statistics](../../../../lessons/sprint_19_20/collision_detection_and_statistics/README.md)
+[Вернуться к Collision Detection and Statistics](../../../../../lessons/sprint_19_20/collision_detection_and_statistics/README.md)
 
-[Вернуться в общий README репозитория](../../../../README.md)
+[Вернуться в общий README репозитория](../../../../../README.md)
