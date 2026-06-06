@@ -675,7 +675,7 @@ GameSession& Game::FindOrCreateSession(const Map& map) {
     return sessions_.back();
 }
 
-const std::vector<GameSession>& Game::GetSessions() const noexcept {
+const Game::Sessions& Game::GetSessions() const noexcept {
     return sessions_;
 }
 

@@ -13,6 +13,7 @@
 
 #include "tagged.h"
 #include "collision_detector.h"
+#include <deque>
 
 namespace model {
 
@@ -292,10 +293,12 @@ private:
 class Game {
 public:
     using Maps = std::vector<Map>;
+    using Sessions = std::deque<GameSession>;
 
     void AddMap(Map map);
 
     const Maps& GetMaps() const noexcept;
+    const Sessions& GetSessions() const noexcept;
     const Map* FindMap(const Map::Id& id) const noexcept;
 
     void SetRandomizeSpawnPoints(bool value) noexcept;
@@ -303,7 +306,6 @@ public:
 
     GameSession& FindOrCreateSession(const Map& map);
 
-    const std::vector<GameSession>& GetSessions() const noexcept;
 
     void Update(double delta_seconds);
 
@@ -313,7 +315,7 @@ private:
 
     std::vector<Map> maps_;
     MapIdToIndex map_id_to_index_;
-    std::vector<GameSession> sessions_;
+    Sessions sessions_;
     bool randomize_spawn_points_ = false;
 
     loot_gen::LootGenerator loot_generator_{std::chrono::milliseconds{1000}, 0.0};
