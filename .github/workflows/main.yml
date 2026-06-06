@@ -273,8 +273,8 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_4:
-    #if: ${{ false }}
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
+    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code & tests
