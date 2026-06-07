@@ -337,8 +337,8 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_4_with_postgress:
-    #if: ${{ false }}
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
+    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
@@ -376,7 +376,7 @@ jobs:
           ./db_of_books/run_postgresless.sh
 
       - name: run tests sprint4 bookypedia-1
-        #if: ${{ false }}
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint4
           ./bookypedia-1/run_postgresless.sh
