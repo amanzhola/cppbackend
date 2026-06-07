@@ -227,4 +227,4 @@ sudo docker rm -f postgres16
 
 [Вернуться к PostgreSQL](../README.md)
 
-[Вернуться в Sprint 4](../../../README.md)
+[Вернуться в общий README репозитория](../../../../README.md)

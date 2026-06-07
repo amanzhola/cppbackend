@@ -343,4 +343,4 @@ DROP DATABASE cars_db;
 
 [Вернуться к PostgreSQL](../README.md)
 
-[Вернуться в Sprint 4](../../../README.md)
+[Вернуться в общий README репозитория](../../../../README.md)
