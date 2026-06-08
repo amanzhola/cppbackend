@@ -88,17 +88,17 @@ bool AuthorRepositoryImpl::Delete(const domain::AuthorId& id) {
     work.exec_params(R"(
 DELETE FROM book_tags
 WHERE book_id IN (
-    SELECT id FROM books WHERE author_id = $1
+    SELECT id FROM books WHERE author_id = $1::uuid
 );
 )"_zv, id.ToString());
 
     work.exec_params(
-        "DELETE FROM books WHERE author_id = $1;"_zv,
+        "DELETE FROM books WHERE author_id = $1::uuid;"_zv,
         id.ToString()
     );
 
     const pqxx::result result = work.exec_params(
-        "DELETE FROM authors WHERE id = $1;"_zv,
+        "DELETE FROM authors WHERE id = $1::uuid;"_zv,
         id.ToString()
     );
 
@@ -111,7 +111,7 @@ bool AuthorRepositoryImpl::Update(const domain::Author& author) {
     pqxx::work work{connection_};
 
     const pqxx::result result = work.exec_params(
-        "UPDATE authors SET name = $2 WHERE id = $1;"_zv,
+        "UPDATE authors SET name = $2 WHERE id = $1::uuid;"_zv,
         author.GetId().ToString(),
         author.GetName()
     );

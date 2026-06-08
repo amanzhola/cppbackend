@@ -386,32 +386,46 @@ std::optional<detail::AddBookParams> View::GetBookParams(std::istream& cmd_input
     author_name = Trim(std::move(author_name));
 
     if (author_name.empty()) {
-        auto author_id = SelectAuthor();
+    	auto author_id = SelectAuthor();
 
-        if (!author_id) {
-            return std::nullopt;
-        }
+    	if (!author_id) {
+        	return std::nullopt;
+    	}
 
-        params.author_id = *author_id;
+    	params.author_id = *author_id;
     } else {
-        auto author = use_cases_.FindAuthorByName(author_name);
+    	std::stringstream author_choice(author_name);
+    	int author_idx = 0;
 
-        if (!author) {
-            output_ << "No author found. Do you want to add "
+    	if (author_choice >> author_idx) {
+        	auto authors = GetAuthors();
+        	--author_idx;
+
+        	if (author_idx < 0 || static_cast<size_t>(author_idx) >= authors.size()) {
+            		return std::nullopt;
+        	}
+
+        	params.author_id = authors[author_idx].id;
+    	} else {
+        	auto author = use_cases_.FindAuthorByName(author_name);
+
+        	if (!author) {
+            	output_ << "No author found. Do you want to add "
                     << author_name << " (y/n)?" << std::endl;
 
-            std::string answer;
-            std::getline(input_, answer);
+            	std::string answer;
+            	std::getline(input_, answer);
 
-            if (answer != "y" && answer != "Y") {
-                return std::nullopt;
-            }
+            	if (answer != "y" && answer != "Y") {
+                	return std::nullopt;
+            	}
 
-            author = use_cases_.AddAuthorAndGet(author_name);
+            	author = use_cases_.AddAuthorAndGet(author_name);
         }
 
         params.author_id = author->id;
     }
+}
 
     output_ << "Enter tags (comma separated):" << std::endl;
 
