@@ -48,7 +48,7 @@ private:
     bool AddBook(std::istream& cmd_input) const;
     bool ShowAuthors() const;
     bool ShowBooks() const;
-    bool ShowAuthorBooks() const;
+    bool ShowAuthorBooks(std::istream& cmd_input) const;
     bool ShowBook(std::istream& cmd_input) const;
     bool DeleteBook(std::istream& cmd_input) const;
     bool DeleteAuthor(std::istream& cmd_input) const;
@@ -56,7 +56,10 @@ private:
     bool EditBook(std::istream& cmd_input) const;
 
     std::optional<detail::AddBookParams> GetBookParams(std::istream& cmd_input) const;
+
     std::optional<std::string> SelectAuthor() const;
+    std::optional<std::string> ResolveAuthorId(const std::string& line) const;
+
     std::optional<detail::BookInfo> SelectBook(const std::vector<detail::BookInfo>& books) const;
     std::optional<detail::BookInfo> ResolveBook(const std::string& title) const;
 
