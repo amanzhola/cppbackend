@@ -254,7 +254,7 @@ bool View::EditBook(std::istream& cmd_input) const {
 
         std::optional<detail::BookInfo> selected;
 
-        if (books.size() == 1 && !title.empty()) {
+        if (!title.empty()) {
             selected = books.front();
         } else {
             selected = SelectBook(books);
