@@ -254,7 +254,7 @@ bool View::EditBook(std::istream& cmd_input) const {
 
         std::optional<detail::BookInfo> selected;
 
-        if (!title.empty()) {
+        if (books.size() == 1 && !title.empty()) {
             selected = books.front();
         } else {
             selected = SelectBook(books);
@@ -467,6 +467,10 @@ std::vector<std::string> View::ParseTags(const std::string& line) const {
         std::string tag = normalize(raw_tag);
 
         if (tag.empty()) {
+            continue;
+        }
+
+        if (tag.size() > 30) {
             continue;
         }
 
