@@ -68,7 +68,6 @@ std::vector<std::string> ParseTags(const std::string& line) {
     }
 
     std::sort(result.begin(), result.end());
-
     return result;
 }
 
@@ -79,7 +78,6 @@ std::string JoinTags(const std::vector<std::string>& tags) {
         if (i != 0) {
             result += ", ";
         }
-
         result += tags[i];
     }
 
@@ -105,8 +103,7 @@ std::ostream& operator<<(std::ostream& out, const BookInfo& book) {
 template <typename T>
 void PrintVector(std::ostream& out, const std::vector<T>& vector) {
     int i = 1;
-
-    for (auto& value : vector) {
+    for (const auto& value : vector) {
         out << i++ << " " << value << std::endl;
     }
 }
@@ -133,7 +130,6 @@ bool View::AddAuthor(std::istream& cmd_input) const {
         std::string name;
         std::getline(cmd_input, name);
         name = Trim(std::move(name));
-
         use_cases_.AddAuthor(name);
     } catch (const std::exception&) {
         output_ << "Failed to add author"sv << std::endl;
@@ -189,7 +185,6 @@ bool View::ShowBook(std::istream& cmd_input) const {
     title = Trim(std::move(title));
 
     auto book = ResolveBook(title);
-
     if (book) {
         PrintBookDetails(*book);
     }
@@ -236,7 +231,6 @@ bool View::DeleteAuthor(std::istream& cmd_input) const {
 
         if (name.empty()) {
             auto author_id = SelectAuthor();
-
             if (!author_id) {
                 return true;
             }
@@ -270,7 +264,6 @@ bool View::EditAuthor(std::istream& cmd_input) const {
             output_ << "Select author:" << std::endl;
 
             auto author_id = SelectAuthor();
-
             if (author_id) {
                 for (const auto& item : GetAuthors()) {
                     if (item.id == *author_id) {
@@ -280,10 +273,21 @@ bool View::EditAuthor(std::istream& cmd_input) const {
                 }
             }
         } else {
-            auto found = use_cases_.FindAuthorByName(name);
+            std::stringstream name_as_choice(name);
+            int author_idx = 0;
 
-            if (found) {
-                author = detail::AuthorInfo{found->id, found->name};
+            if (name_as_choice >> author_idx) {
+                auto authors = GetAuthors();
+                --author_idx;
+
+                if (author_idx >= 0 && static_cast<size_t>(author_idx) < authors.size()) {
+                    author = authors[author_idx];
+                }
+            } else {
+                auto found = use_cases_.FindAuthorByName(name);
+                if (found) {
+                    author = detail::AuthorInfo{found->id, found->name};
+                }
             }
         }
 
@@ -341,7 +345,6 @@ bool View::EditBook(std::istream& cmd_input) const {
         year_line = Trim(std::move(year_line));
 
         int new_year = book->publication_year;
-
         if (!year_line.empty()) {
             new_year = std::stoi(year_line);
         }
@@ -383,17 +386,15 @@ std::optional<detail::AddBookParams> View::GetBookParams(std::istream& cmd_input
 
     if (author_line.empty()) {
         auto author_id = SelectAuthor();
-
         if (!author_id) {
             return std::nullopt;
         }
-
         params.author_id = *author_id;
     } else {
-        std::stringstream author_choice(author_line);
+        std::stringstream choice(author_line);
         int author_idx = 0;
 
-        if (author_choice >> author_idx) {
+        if (choice >> author_idx) {
             auto authors = GetAuthors();
             --author_idx;
 
@@ -441,8 +442,13 @@ std::optional<std::string> View::SelectAuthor() const {
     output_ << "Enter author # or empty line to cancel" << std::endl;
 
     std::string str;
+    if (!std::getline(input_, str)) {
+        return std::nullopt;
+    }
 
-    if (!std::getline(input_, str) || Trim(str).empty()) {
+    str = Trim(std::move(str));
+
+    if (str.empty()) {
         return std::nullopt;
     }
 
@@ -460,12 +466,16 @@ std::optional<std::string> View::SelectAuthor() const {
 
 std::optional<detail::BookInfo> View::SelectBook(const std::vector<detail::BookInfo>& books) const {
     PrintVector(output_, books);
-
     output_ << "Enter the book # or empty line to cancel:" << std::endl;
 
     std::string str;
+    if (!std::getline(input_, str)) {
+        return std::nullopt;
+    }
 
-    if (!std::getline(input_, str) || Trim(str).empty()) {
+    str = Trim(std::move(str));
+
+    if (str.empty()) {
         return std::nullopt;
     }
 
@@ -499,10 +509,7 @@ std::vector<detail::AuthorInfo> View::GetAuthors() const {
     std::vector<detail::AuthorInfo> result;
 
     for (const auto& author : use_cases_.GetAuthors()) {
-        result.push_back({
-            author.id,
-            author.name
-        });
+        result.push_back({author.id, author.name});
     }
 
     return result;
