@@ -176,7 +176,6 @@ bool View::EditAuthor(std::istream& cmd_input) const {
         std::optional<std::string> author_id;
 
         if (name.empty()) {
-            output_ << "Select author:" << std::endl;
             author_id = SelectAuthor();
         } else {
             auto author = use_cases_.FindAuthorByName(name);
@@ -369,6 +368,8 @@ std::optional<std::string> View::SelectAuthorByNameOrList(std::string name) cons
 }
 
 std::optional<std::string> View::SelectAuthor() const {
+    output_ << "Select author:" << std::endl;
+
     auto authors = GetAuthors();
     PrintVector(output_, authors);
     output_ << "Enter author # or empty line to cancel" << std::endl;
@@ -378,11 +379,18 @@ std::optional<std::string> View::SelectAuthor() const {
         return std::nullopt;
     }
 
-    int author_idx = std::stoi(str);
+    int author_idx = 0;
+
+    try {
+        author_idx = std::stoi(str);
+    } catch (const std::exception&) {
+        return std::nullopt;
+    }
+
     --author_idx;
 
     if (author_idx < 0 || static_cast<size_t>(author_idx) >= authors.size()) {
-        throw std::runtime_error("Invalid author num");
+        return std::nullopt;
     }
 
     return authors[author_idx].id;
