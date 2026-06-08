@@ -319,11 +319,10 @@ std::vector<domain::Book> BookRepositoryImpl::GetByAuthorId(const domain::Author
 
     const pqxx::result rows = read.exec_params(
         R"(
-SELECT b.id, b.author_id, b.title, b.publication_year
-FROM books b
-JOIN authors a ON b.author_id = a.id
-WHERE b.author_id = $1
-ORDER BY b.title, a.name, b.publication_year;
+SELECT id, author_id, title, publication_year
+FROM books
+WHERE author_id = $1
+ORDER BY publication_year, title;
 )"_zv,
         author_id.ToString()
     );
