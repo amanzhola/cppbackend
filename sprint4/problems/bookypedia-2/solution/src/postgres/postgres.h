@@ -17,13 +17,13 @@ public:
 
     std::vector<domain::Author> GetAll() override;
 
-    std::optional<domain::Author> FindByName(const std::string& name) override;
+    std::optional<domain::Author> GetByName(const std::string& name) override;
 
-    std::optional<domain::Author> FindById(const domain::AuthorId& id) override;
+    bool DeleteById(const domain::AuthorId& id) override;
 
-    bool Delete(const domain::AuthorId& id) override;
+    bool DeleteByName(const std::string& name) override;
 
-    bool Update(const domain::Author& author) override;
+    bool UpdateName(const domain::AuthorId& id, const std::string& new_name) override;
 
 private:
     pqxx::connection& connection_;
@@ -35,22 +35,20 @@ public:
         : connection_{connection} {
     }
 
-    void Save(const domain::Book& book, const std::vector<std::string>& tags) override;
+    void Save(const domain::Book& book) override;
 
-    std::vector<domain::BookDetails> GetAllDetailed() override;
+    bool Update(const domain::Book& book) override;
 
-    std::vector<domain::BookDetails> GetByTitleDetailed(const std::string& title) override;
+    bool DeleteById(const domain::BookId& id) override;
 
-    std::optional<domain::BookDetails> FindDetailedById(const domain::BookId& id) override;
+    std::vector<domain::Book> GetAll() override;
 
-    bool Delete(const domain::BookId& id) override;
+    std::vector<domain::Book> GetByTitle(const std::string& title) override;
 
-    bool Update(const domain::Book& book, const std::vector<std::string>& tags) override;
+    std::vector<domain::Book> GetByAuthorId(const domain::AuthorId& author_id) override;
 
 private:
-    std::vector<std::string> LoadTags(pqxx::transaction_base& tx, const domain::BookId& book_id);
-
-    domain::BookDetails MakeBookDetails(pqxx::transaction_base& tx, const pqxx::row& row);
+    std::vector<std::string> GetTags(pqxx::transaction_base& tx, const domain::BookId& book_id);
 
 private:
     pqxx::connection& connection_;
