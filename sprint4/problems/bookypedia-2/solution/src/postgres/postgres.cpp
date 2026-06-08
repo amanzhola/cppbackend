@@ -65,6 +65,21 @@ std::optional<domain::Author> AuthorRepositoryImpl::GetByName(const std::string&
 bool AuthorRepositoryImpl::DeleteById(const domain::AuthorId& id) {
     pqxx::work work{connection_};
 
+    work.exec_params(
+        R"(
+DELETE FROM book_tags
+WHERE book_id IN (
+    SELECT id FROM books WHERE author_id = $1
+);
+)"_zv,
+        id.ToString()
+    );
+
+    work.exec_params(
+        "DELETE FROM books WHERE author_id = $1;"_zv,
+        id.ToString()
+    );
+
     const auto result = work.exec_params(
         "DELETE FROM authors WHERE id = $1;"_zv,
         id.ToString()
@@ -78,9 +93,35 @@ bool AuthorRepositoryImpl::DeleteById(const domain::AuthorId& id) {
 bool AuthorRepositoryImpl::DeleteByName(const std::string& name) {
     pqxx::work work{connection_};
 
-    const auto result = work.exec_params(
-        "DELETE FROM authors WHERE name = $1;"_zv,
+    const pqxx::result rows = work.exec_params(
+        "SELECT id FROM authors WHERE name = $1;"_zv,
         name
+    );
+
+    if (rows.empty()) {
+        return false;
+    }
+
+    const std::string id = rows.front()["id"].c_str();
+
+    work.exec_params(
+        R"(
+DELETE FROM book_tags
+WHERE book_id IN (
+    SELECT id FROM books WHERE author_id = $1
+);
+)"_zv,
+        id
+    );
+
+    work.exec_params(
+        "DELETE FROM books WHERE author_id = $1;"_zv,
+        id
+    );
+
+    const auto result = work.exec_params(
+        "DELETE FROM authors WHERE id = $1;"_zv,
+        id
     );
 
     work.commit();
@@ -174,6 +215,11 @@ ON CONFLICT DO NOTHING;
 
 bool BookRepositoryImpl::DeleteById(const domain::BookId& id) {
     pqxx::work work{connection_};
+
+    work.exec_params(
+        "DELETE FROM book_tags WHERE book_id = $1;"_zv,
+        id.ToString()
+    );
 
     const auto result = work.exec_params(
         "DELETE FROM books WHERE id = $1;"_zv,

@@ -97,11 +97,19 @@ bool View::ShowBooks() const {
 bool View::ShowAuthorBooks() const {
     try {
         if (auto author_id = SelectAuthor()) {
-            PrintVector(output_, GetAuthorBooks(*author_id));
+            int i = 1;
+
+            for (const auto& book : GetAuthorBooks(*author_id)) {
+                output_ << i++ << " "
+                        << book.title << ", "
+                        << book.publication_year
+                        << std::endl;
+            }
         }
     } catch (const std::exception&) {
         throw std::runtime_error("Failed to Show Books");
     }
+
     return true;
 }
 
@@ -207,7 +215,7 @@ bool View::DeleteBook(std::istream& cmd_input) const {
         std::vector<detail::BookInfo> books = title.empty() ? GetBooks() : GetBooksByTitle(title);
 
         if (books.empty()) {
-            output_ << "Failed to delete book"sv << std::endl;
+            output_ << "Book not found"sv << std::endl;
             return true;
         }
 
@@ -255,6 +263,7 @@ bool View::EditBook(std::istream& cmd_input) const {
         }
 
         if (!selected) {
+	    output_ << "Book not found"sv << std::endl;
             return true;
         }
 
@@ -458,6 +467,8 @@ std::vector<std::string> View::ParseTags(const std::string& line) const {
             result.push_back(std::move(tag));
         }
     }
+
+    std::sort(result.begin(), result.end());
 
     return result;
 }
