@@ -326,8 +326,6 @@ std::optional<detail::AddBookParams> View::GetBookParams(std::istream& cmd_input
     auto author_id = SelectAuthorByNameOrList(author_name);
 
     if (!author_id) {
-    	std::string ignored_tags_line;
-    	std::getline(input_, ignored_tags_line);
     	return std::nullopt;
     }
 
