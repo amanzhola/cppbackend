@@ -277,11 +277,22 @@ bool View::EditAuthor(std::istream& cmd_input) const {
             int author_idx = 0;
 
             if (name_as_choice >> author_idx) {
-                auto authors = GetAuthors();
-                --author_idx;
+                std::string author_name_from_choice;
+                std::getline(name_as_choice, author_name_from_choice);
+                author_name_from_choice = Trim(std::move(author_name_from_choice));
 
-                if (author_idx >= 0 && static_cast<size_t>(author_idx) < authors.size()) {
-                    author = authors[author_idx];
+                if (!author_name_from_choice.empty()) {
+                    auto found = use_cases_.FindAuthorByName(author_name_from_choice);
+                    if (found) {
+                        author = detail::AuthorInfo{found->id, found->name};
+                    }
+                } else {
+                    auto authors = GetAuthors();
+                    --author_idx;
+
+                    if (author_idx >= 0 && static_cast<size_t>(author_idx) < authors.size()) {
+                        author = authors[author_idx];
+                    }
                 }
             } else {
                 auto found = use_cases_.FindAuthorByName(name);
@@ -395,14 +406,28 @@ std::optional<detail::AddBookParams> View::GetBookParams(std::istream& cmd_input
         int author_idx = 0;
 
         if (choice >> author_idx) {
-            auto authors = GetAuthors();
-            --author_idx;
+            std::string author_name_from_choice;
+            std::getline(choice, author_name_from_choice);
+            author_name_from_choice = Trim(std::move(author_name_from_choice));
 
-            if (author_idx < 0 || static_cast<size_t>(author_idx) >= authors.size()) {
-                return std::nullopt;
+            if (!author_name_from_choice.empty()) {
+                auto author = use_cases_.FindAuthorByName(author_name_from_choice);
+
+                if (!author) {
+                    return std::nullopt;
+                }
+
+                params.author_id = author->id;
+            } else {
+                auto authors = GetAuthors();
+                --author_idx;
+
+                if (author_idx < 0 || static_cast<size_t>(author_idx) >= authors.size()) {
+                    return std::nullopt;
+                }
+
+                params.author_id = authors[author_idx].id;
             }
-
-            params.author_id = authors[author_idx].id;
         } else {
             auto author = use_cases_.FindAuthorByName(author_line);
 
