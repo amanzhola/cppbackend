@@ -75,9 +75,7 @@ bool View::AddBook(std::istream& cmd_input) const {
                 params->publication_year,
                 params->tags
             );
-        } else {
-            output_ << "Failed to add book"sv << std::endl;
-        }
+       	}
     } catch (const std::exception&) {
         output_ << "Failed to add book"sv << std::endl;
     }
@@ -357,7 +355,7 @@ std::optional<std::string> View::SelectAuthorByNameOrList(std::string name) cons
     std::getline(input_, answer);
 
     if (answer != "Y" && answer != "y") {
-        return std::nullopt;
+        throw std::runtime_error("Failed to add author");
     }
 
     use_cases_.AddAuthor(name);
