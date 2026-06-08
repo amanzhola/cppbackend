@@ -234,28 +234,20 @@ bool View::DeleteAuthor(std::istream& cmd_input) const {
         std::getline(cmd_input, name);
         name = Trim(std::move(name));
 
-        std::optional<detail::AuthorInfo> author;
-
         if (name.empty()) {
             auto author_id = SelectAuthor();
 
-            if (author_id) {
-                for (const auto& item : GetAuthors()) {
-                    if (item.id == *author_id) {
-                        author = item;
-                        break;
-                    }
-                }
+            if (!author_id) {
+                return true;
             }
-        } else {
-            auto found = use_cases_.FindAuthorByName(name);
 
-            if (found) {
-                author = detail::AuthorInfo{found->id, found->name};
-            }
+            use_cases_.DeleteAuthor(*author_id);
+            return true;
         }
 
-        if (!author || !use_cases_.DeleteAuthor(author->id)) {
+        auto found = use_cases_.FindAuthorByName(name);
+
+        if (!found || !use_cases_.DeleteAuthor(found->id)) {
             output_ << "Failed to delete author"sv << std::endl;
         }
 
@@ -379,53 +371,58 @@ std::optional<detail::AddBookParams> View::GetBookParams(std::istream& cmd_input
     std::getline(cmd_input, params.title);
     params.title = Trim(std::move(params.title));
 
+    if (params.title.empty()) {
+        return std::nullopt;
+    }
+
     output_ << "Enter author name or empty line to select from list:" << std::endl;
 
-    std::string author_name;
-    std::getline(input_, author_name);
-    author_name = Trim(std::move(author_name));
+    std::string author_line;
+    std::getline(input_, author_line);
+    author_line = Trim(std::move(author_line));
 
-    if (author_name.empty()) {
-    	auto author_id = SelectAuthor();
+    if (author_line.empty()) {
+        auto author_id = SelectAuthor();
 
-    	if (!author_id) {
-        	return std::nullopt;
-    	}
-
-    	params.author_id = *author_id;
-    } else {
-    	std::stringstream author_choice(author_name);
-    	int author_idx = 0;
-
-    	if (author_choice >> author_idx) {
-        	auto authors = GetAuthors();
-        	--author_idx;
-
-        	if (author_idx < 0 || static_cast<size_t>(author_idx) >= authors.size()) {
-            		return std::nullopt;
-        	}
-
-        	params.author_id = authors[author_idx].id;
-    	} else {
-        	auto author = use_cases_.FindAuthorByName(author_name);
-
-        	if (!author) {
-            	output_ << "No author found. Do you want to add "
-                    << author_name << " (y/n)?" << std::endl;
-
-            	std::string answer;
-            	std::getline(input_, answer);
-
-            	if (answer != "y" && answer != "Y") {
-                	return std::nullopt;
-            	}
-
-            	author = use_cases_.AddAuthorAndGet(author_name);
+        if (!author_id) {
+            return std::nullopt;
         }
 
-        params.author_id = author->id;
+        params.author_id = *author_id;
+    } else {
+        std::stringstream author_choice(author_line);
+        int author_idx = 0;
+
+        if (author_choice >> author_idx) {
+            auto authors = GetAuthors();
+            --author_idx;
+
+            if (author_idx < 0 || static_cast<size_t>(author_idx) >= authors.size()) {
+                return std::nullopt;
+            }
+
+            params.author_id = authors[author_idx].id;
+        } else {
+            auto author = use_cases_.FindAuthorByName(author_line);
+
+            if (!author) {
+                output_ << "No author found. Do you want to add "
+                        << author_line << " (y/n)?" << std::endl;
+
+                std::string answer;
+                std::getline(input_, answer);
+                answer = Trim(std::move(answer));
+
+                if (answer != "y" && answer != "Y") {
+                    return std::nullopt;
+                }
+
+                author = use_cases_.AddAuthorAndGet(author_line);
+            }
+
+            params.author_id = author->id;
+        }
     }
-}
 
     output_ << "Enter tags (comma separated):" << std::endl;
 
