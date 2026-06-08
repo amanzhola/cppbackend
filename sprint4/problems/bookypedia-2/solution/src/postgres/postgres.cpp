@@ -85,6 +85,18 @@ std::optional<domain::Author> AuthorRepositoryImpl::FindById(const domain::Autho
 bool AuthorRepositoryImpl::Delete(const domain::AuthorId& id) {
     pqxx::work work{connection_};
 
+    work.exec_params(R"(
+DELETE FROM book_tags
+WHERE book_id IN (
+    SELECT id FROM books WHERE author_id = $1
+);
+)"_zv, id.ToString());
+
+    work.exec_params(
+        "DELETE FROM books WHERE author_id = $1;"_zv,
+        id.ToString()
+    );
+
     const pqxx::result result = work.exec_params(
         "DELETE FROM authors WHERE id = $1;"_zv,
         id.ToString()
@@ -232,6 +244,11 @@ WHERE b.id = $1;
 
 bool BookRepositoryImpl::Delete(const domain::BookId& id) {
     pqxx::work work{connection_};
+
+    work.exec_params(
+        "DELETE FROM book_tags WHERE book_id = $1;"_zv,
+        id.ToString()
+    );
 
     const pqxx::result result = work.exec_params(
         "DELETE FROM books WHERE id = $1;"_zv,

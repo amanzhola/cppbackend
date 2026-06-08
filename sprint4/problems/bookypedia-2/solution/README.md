@@ -444,6 +444,6 @@ cmake --build .
 
 ## ⬅️ Назад
 
-[Вернуться к Keys, Indexes and Transactions](../../../lessons/sprint_20_20/keys_indexes_transactions/README.md)
+[Вернуться к Keys, Indexes and Transactions](../../../../lessons/sprint_20_20/keys_indexes_transactions/README.md)
 
 [Вернуться в общий README репозитория](../../../../README.md)

@@ -202,9 +202,26 @@ bool View::DeleteBook(std::istream& cmd_input) const {
     std::getline(cmd_input, title);
     title = Trim(std::move(title));
 
-    auto book = ResolveBook(title);
+    auto books = title.empty() ? GetBooks() : GetBooksByTitle(title);
 
-    if (!book || !use_cases_.DeleteBook(book->id)) {
+    if (books.empty()) {
+        output_ << "Book not found"sv << std::endl;
+        return true;
+    }
+
+    std::optional<detail::BookInfo> book;
+
+    if (books.size() == 1) {
+        book = books.front();
+    } else {
+        book = SelectBook(books);
+    }
+
+    if (!book) {
+        return true;
+    }
+
+    if (!use_cases_.DeleteBook(book->id)) {
         output_ << "Failed to delete book"sv << std::endl;
     }
 
@@ -414,15 +431,17 @@ std::optional<std::string> View::SelectAuthor() const {
 
     std::string str;
 
-    if (!std::getline(input_, str) || str.empty()) {
+    if (!std::getline(input_, str) || Trim(str).empty()) {
         return std::nullopt;
     }
 
-    int author_idx = std::stoi(str);
+    std::stringstream ss(str);
+    int author_idx = 0;
+    ss >> author_idx;
     --author_idx;
 
     if (author_idx < 0 || static_cast<size_t>(author_idx) >= authors.size()) {
-        throw std::runtime_error("Invalid author num");
+        return std::nullopt;
     }
 
     return authors[author_idx].id;
@@ -435,11 +454,13 @@ std::optional<detail::BookInfo> View::SelectBook(const std::vector<detail::BookI
 
     std::string str;
 
-    if (!std::getline(input_, str) || str.empty()) {
+    if (!std::getline(input_, str) || Trim(str).empty()) {
         return std::nullopt;
     }
 
-    int book_idx = std::stoi(str);
+    std::stringstream ss(str);
+    int book_idx = 0;
+    ss >> book_idx;
     --book_idx;
 
     if (book_idx < 0 || static_cast<size_t>(book_idx) >= books.size()) {
