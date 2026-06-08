@@ -96,6 +96,8 @@ bool View::ShowBooks() const {
 
 bool View::ShowAuthorBooks() const {
     try {
+        output_ << "Select author:" << std::endl;
+
         if (auto author_id = SelectAuthor()) {
             int i = 1;
 
@@ -176,6 +178,7 @@ bool View::EditAuthor(std::istream& cmd_input) const {
         std::optional<std::string> author_id;
 
         if (name.empty()) {
+            output_ << "Select author:" << std::endl;
             author_id = SelectAuthor();
         } else {
             auto author = use_cases_.FindAuthorByName(name);
@@ -262,7 +265,7 @@ bool View::EditBook(std::istream& cmd_input) const {
         }
 
         if (!selected) {
-	    output_ << "Book not found"sv << std::endl;
+            output_ << "Book not found"sv << std::endl;
             return true;
         }
 
@@ -298,7 +301,23 @@ bool View::EditBook(std::istream& cmd_input) const {
             current_tags += selected->tags[i];
         }
 
-        auto tags = ReadTags(current_tags);
+        std::string tags_line;
+
+        if (current_tags.empty()) {
+            output_ << "Enter tags (comma separated):" << std::endl;
+        } else {
+            output_ << "Enter tags (current tags: " << current_tags << "):" << std::endl;
+        }
+
+        std::getline(input_, tags_line);
+
+        std::vector<std::string> tags;
+
+        if (tags_line.empty()) {
+            tags = selected->tags;
+        } else {
+            tags = ParseTags(tags_line);
+        }
 
         if (!use_cases_.EditBook(selected->id, new_title, new_year, tags)) {
             output_ << "Book not found"sv << std::endl;
@@ -368,8 +387,6 @@ std::optional<std::string> View::SelectAuthorByNameOrList(std::string name) cons
 }
 
 std::optional<std::string> View::SelectAuthor() const {
-    output_ << "Select author:" << std::endl;
-
     auto authors = GetAuthors();
     PrintVector(output_, authors);
     output_ << "Enter author # or empty line to cancel" << std::endl;
