@@ -285,6 +285,10 @@ void Dog::SetPosition(Position position) noexcept {
 
 void Dog::SetSpeed(Speed speed) noexcept {
     speed_ = speed;
+
+    if (speed_.dx != 0.0 || speed_.dy != 0.0) {
+        idle_time_ = std::chrono::milliseconds{0};
+    }
 }
 
 void Dog::SetDirection(Direction direction) noexcept {
