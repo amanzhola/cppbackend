@@ -337,8 +337,8 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_4_with_postgress:
-    if: ${{ false }}
-    #if: github.repository_owner != 'cpppracticum'
+    #if: ${{ false }}
+    if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
