@@ -151,8 +151,8 @@ jobs:
           ./command_line/run.sh
 
   sprint_3:
-    #if: ${{ false }}
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
+    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code & tests
@@ -274,6 +274,7 @@ jobs:
 
   sprint_4:
     if: ${{ false }}
+    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code & tests
@@ -300,8 +301,8 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_3_with_server:
-    #if: ${{ false }}
-    if: github.repository_owner != 'cpppracticum'
+    if: ${{ false }}
+    #if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend_server:latest
@@ -336,8 +337,8 @@ jobs:
           junit_files: ${{ github.workspace }}/*.xml
 
   sprint_4_with_postgress:
-    if: ${{ false }}
-    #if: github.repository_owner != 'cpppracticum'
+    #if: ${{ false }}
+    if: github.repository_owner != 'cpppracticum'
     runs-on: ubuntu-22.04
     container:
       image: praktikumcpp/practicum_cpp_backend:latest
@@ -369,16 +370,19 @@ jobs:
           cp -R /home/forconan/.conan /github/home/.conan
 
       - name: run tests sprint4 db_of_books
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint4
           ./db_of_books/run_postgresless.sh
 
       - name: run tests sprint4 bookypedia-1
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint4
           ./bookypedia-1/run_postgresless.sh
 
       - name: run tests sprint4 bookypedia-2
+        if: ${{ false }}
         run: |
           cd cpp-backend-tests-practicum/scripts/sprint4
           ./bookypedia-2/run_postgresless.sh
