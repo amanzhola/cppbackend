@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <exception>
 
 namespace http_handler {
 
@@ -391,7 +392,7 @@ RequestHandler::StringResponse RequestHandler::HandleJoinGame(const StringReques
 
         return response;
 
-    } catch (...) {
+    } catch (const std::exception&) {
         auto body = MakeErrorBody("invalidArgument", "Join game request parse error");
 
         StringResponse response{http::status::bad_request, version};
@@ -739,7 +740,7 @@ RequestHandler::StringResponse RequestHandler::HandlePlayerAction(const StringRe
 
         return response;
 
-    } catch (...) {
+    } catch (const std::exception&) {
         auto body = MakeErrorBody("invalidArgument", "Failed to parse action");
 
         StringResponse response{http::status::bad_request, version};
@@ -826,7 +827,7 @@ RequestHandler::StringResponse RequestHandler::HandleGameTick(const StringReques
 
         return response;
 
-    } catch (...) {
+    } catch (const std::exception&) {
         auto body = MakeErrorBody("invalidArgument", "Failed to parse tick request JSON");
 
         StringResponse response{http::status::bad_request, version};

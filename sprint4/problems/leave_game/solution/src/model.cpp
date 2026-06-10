@@ -561,16 +561,20 @@ void GameSession::GenerateLoot(std::chrono::milliseconds time_delta,
 
 void GameSession::ReturnDogLootToOffice(Dog& dog) {
     const auto collected_objects = dog.DropBag();
-
-    int score = 0;
-
     const auto& loot_type_values = map_.GetLootTypeValues();
 
-    for (const auto& object : collected_objects) {
-        if (object.type < loot_type_values.size()) {
-            score += loot_type_values.at(object.type);
+    const int score = std::accumulate(
+        collected_objects.begin(),
+        collected_objects.end(),
+        0,
+        [&loot_type_values](int score, const LostObject& object) {
+            if (object.type >= loot_type_values.size()) {
+                return score;
+            }
+
+            return score + loot_type_values.at(object.type);
         }
-    }
+    );
 
     dog.AddScore(score);
 }
