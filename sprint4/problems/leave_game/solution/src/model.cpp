@@ -381,13 +381,13 @@ void GameSession::Update(double delta_seconds) {
     for (auto& [dog_id, dog] : dogs_) {
         const Position start = dog.GetPosition();
 
-        MoveDog(dog, delta_seconds);
-
         dog.AddGameTime(
     		std::chrono::duration_cast<std::chrono::milliseconds>(
         		std::chrono::duration<double>(delta_seconds)
     	    	)
 	);
+
+        MoveDog(dog, delta_seconds);
 
         const Position finish = dog.GetPosition();
 
