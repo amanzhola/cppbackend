@@ -117,6 +117,20 @@ model::Map ParseMap(const json::object& map_obj,
     map.SetLootTypesCount(loot_types.size());
     extra_data.AddLootTypes(map.GetId(), loot_types);
 
+    std::vector<int> loot_type_values;
+    loot_type_values.reserve(loot_types.size());
+
+    for (const auto& loot_value : loot_types) {
+        const auto& loot_obj = loot_value.as_object();
+
+        loot_type_values.push_back(
+            static_cast<int>(loot_obj.at("value").as_int64())
+        );
+    }
+
+    map.SetLootTypeValues(std::move(loot_type_values));
+
+
     return map;
 }
 
