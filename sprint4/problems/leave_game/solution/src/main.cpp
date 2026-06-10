@@ -311,8 +311,6 @@ int main(int argc, const char* argv[]) {
         return EXIT_SUCCESS;
 
     } catch (const std::exception& ex) {
-        InitLogging();
-
         LogInfo("server exited", json::object{
             {"code", EXIT_FAILURE},
             {"exception", ex.what()}

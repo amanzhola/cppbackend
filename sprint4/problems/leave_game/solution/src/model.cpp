@@ -567,7 +567,7 @@ void GameSession::ReturnDogLootToOffice(Dog& dog) {
         collected_objects.begin(),
         collected_objects.end(),
         0,
-        [&loot_type_values](int score, const LostObject& object) {
+        [&loot_type_values](int score, const auto& object) {
             if (object.type >= loot_type_values.size()) {
                 return score;
             }
