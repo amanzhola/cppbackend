@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <numeric>
 #include <random>
 #include <stdexcept>
 #include <unordered_set>
